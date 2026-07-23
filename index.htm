@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabCollect Pro | Clinical Toolkit</title>
+    
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="./manifest.json">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+    :root {
+        --tube-culture: #f59e0b;
+        --tube-light-blue: #7dd3fc;
+        --tube-red: #ef4444;
+        --tube-green: #22c55e;
+        --tube-lavender: #a855f7;
+        --tube-pink: #f472b6;
+        --tube-gray: #9ca3af;
+        --tube-royal-blue: #1d4ed8;
+        --tube-yellow: #eab308;
+
+        --accent: #2563eb;
+        --accent-2: #7c3aed;
+        --accent-3: #06b6d4;
+
+        /* Glass tokens */
+        --glass-bg: rgba(255, 255, 255, 0.55);
+        --glass-bg-strong: rgba(255, 255, 255, 0.72);
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --glass-highlight: rgba(255, 255, 255, 0.9);
+        --glass-shadow: 0 8px 32px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+        --glass-shadow-hover: 0 20px 48px -12px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.06);
+        --glass-blur: 20px;
+
+        --surface-radius: 20px;
+        --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background:
+            radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.06), transparent 45%),
+            radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.05), transparent 45%),
+            #f6f8fb;
+        overflow: hidden;
+        transition: background-color .4s ease, color .4s ease;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .bengali-text { font-family: 'Noto Sans Bengali', sans-serif; }
+
+    /* ============ PREMIUM SCROLLBAR ============ */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #cbd5e1, #94a3b8); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #94a3b8, #64748b); }
+
+    /* ============ ANIMATIONS ============ */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInScale { from { opacity: 0; transform: scale(.95) translateY(6px); filter: blur(4px); } to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); } }
+    @keyframes fillUp { from { height: 0; } to { height: 60%; } }
+    @keyframes pulseAlert { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes gradientShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes dashFlow { to { stroke-dashoffset: -24; } }
+    @keyframes sheen { 0% { transform: translateX(-120%) skewX(-15deg); } 100% { transform: translateX(220%) skewX(-15deg); } }
+    @keyframes glowPulse { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+
+    .animate-fade-in { animation: fadeIn 0.45s var(--ease-premium) forwards; }
+    .animate-fade-in-scale { animation: fadeInScale 0.45s var(--ease-premium) forwards; }
+    .animate-pop { animation: popIn .45s cubic-bezier(.34,1.56,.64,1) forwards; }
+    .animate-slide-in { animation: slideInRight .4s var(--ease-premium) forwards; }
+    .animate-float { animation: floatY 3.2s ease-in-out infinite; }
+
+    .skeleton { background: linear-gradient(90deg,#eef2f7 25%,#f8fafc 37%,#eef2f7 63%); background-size: 800px 100%; animation: shimmer 1.4s linear infinite; }
+
+    /* ============ 3D TUBE — PREMIUM ============ */
+    .tube-3d-wrapper { position: relative; width: 44px; height: 160px; margin: 20px auto; perspective: 400px; transition: transform .35s var(--ease-premium); }
+    .tube-3d-wrapper:hover { transform: rotateY(10deg) rotateX(5deg) scale(1.08) translateY(-4px); }
+    .tube-glass {
+        position: absolute; bottom: 0; left: 0; right: 0; top: 25px;
+        background: linear-gradient(100deg, #f8fafc 0%, #ffffff 35%, #eef2f7 65%, #e2e8f0 100%);
+        border: 1.5px solid rgba(203, 213, 225, 0.8);
+        border-radius: 0 0 22px 22px;
+        box-shadow:
+            inset -6px 0 12px rgba(15, 23, 42, 0.05),
+            inset 6px 0 12px rgba(255, 255, 255, 0.9),
+            0 8px 20px -6px rgba(15, 23, 42, 0.12);
+        overflow: hidden; z-index: 2; backdrop-filter: blur(1px);
+    }
+    .tube-liquid {
+        position: absolute; bottom: 0; left: 0; right: 0; background: #dc2626;
+        border-radius: 0 0 18px 18px;
+        animation: fillUp 1.1s var(--ease-premium) forwards;
+        opacity: 0.88;
+        box-shadow: inset 0 6px 14px rgba(0,0,0,0.22), inset 0 -2px 6px rgba(255,255,255,0.1);
+        z-index: 1;
+    }
+    .tube-liquid::after { content:''; position:absolute; top:0; left:0; right:0; height:7px; background: linear-gradient(90deg, rgba(255,255,255,.1), rgba(255,255,255,.45), rgba(255,255,255,.1)); border-radius: 50%; }
+    .tube-cap-3d {
+        position: absolute; top: 0; left: -2px; right: -2px; height: 35px; border-radius: 7px 7px 0 0;
+        box-shadow: 0 6px 10px rgba(0,0,0,0.15), inset 0 2px 5px rgba(255,255,255,0.5), inset 0 -5px 8px rgba(0,0,0,0.25);
+        z-index: 3; transition: background-color 0.4s ease;
+    }
+    .tube-label-3d {
+        position: absolute; top: 40px; left: 4px; right: 4px; height: 60px;
+        background: rgba(255, 255, 255, 0.92); border: 1px solid rgba(226, 232, 240, .9); border-radius: 4px;
+        z-index: 3; box-shadow: 0 2px 6px rgba(15,23,42,0.06);
+        backdrop-filter: blur(2px);
+    }
+
+    .mini-tube { width: 22px; height: 70px; position: relative; margin: 0 auto; transition: transform .25s var(--ease-premium); }
+    .mini-tube .cap { position:absolute; top:0; left:-1px; right:-1px; height:16px; border-radius:5px 5px 0 0; box-shadow: 0 3px 5px rgba(0,0,0,.18); }
+    .mini-tube .body { position:absolute; top:14px; bottom:0; left:0; right:0; background: linear-gradient(100deg,#f8fafc,#fff 45%,#e2e8f0); border:1.5px solid rgba(203,213,225,.8); border-radius:0 0 9px 9px; overflow:hidden; box-shadow: 0 4px 10px -4px rgba(15,23,42,.15); }
+    .mini-tube .body .fill { position:absolute; bottom:0; left:0; right:0; height:55%; box-shadow: inset 0 3px 6px rgba(0,0,0,.2); }
+
+    /* ============ PREMIUM GLASSMORPHISM SURFACES ============ */
+    .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        position: relative;
+        transition: background-color .35s ease, border-color .35s ease, box-shadow .35s var(--ease-premium), transform .35s var(--ease-premium);
+    }
+    .glass-panel::before {
+        content: '';
+        position: absolute; inset: 0; border-radius: inherit; padding: 1px;
+        background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,.5));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; mask-composite: exclude;
+        pointer-events: none; opacity: .8;
+    }
+
+    .card-hover { transition: transform .28s var(--ease-premium), box-shadow .28s var(--ease-premium); }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: var(--glass-shadow-hover); }
+
+    .nav-item.active {
+        background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(124,58,237,0.06));
+        color: #2563eb; border-left-color: #2563eb;
+        box-shadow: inset 0 0 0 1px rgba(37,99,235,0.08);
+    }
+    .timer-alert { animation: pulseAlert 1.5s infinite; border-color: #ef4444 !important; }
+
+    .editable-field:hover { background-color: rgba(241, 245, 249, 0.8); cursor: pointer; border-radius: 6px; outline: 1.5px dashed #94a3b8; }
+    .editable-field.editing { background-color: #fff; cursor: text; outline: 2px solid #3b82f6; border-radius: 6px; padding: 3px; box-shadow: 0 0 0 4px rgba(59,130,246,0.12); }
+
+    /* ============ PREMIUM BRAND & GLOW ACCENTS ============ */
+    .brand-badge {
+        background: linear-gradient(135deg,#2563eb,#7c3aed 55%,#06b6d4 100%);
+        background-size: 220% 220%;
+        animation: gradientShift 7s ease infinite;
+        box-shadow: 0 6px 18px -4px rgba(37,99,235,0.5), inset 0 1px 1px rgba(255,255,255,0.3);
+    }
+
+    .glow-ring { position: relative; }
+    .glow-ring::after {
+        content: ''; position: absolute; inset: -6px; border-radius: inherit;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        filter: blur(14px); opacity: .35; z-index: -1;
+        animation: glowPulse 2.4s ease-in-out infinite;
+    }
+
+    /* ============ TOASTS — PREMIUM ============ */
+    #toast-stack { position: fixed; bottom: 20px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+        min-width: 260px; max-width: 340px; padding: 13px 16px; border-radius: 14px;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #fff; box-shadow: 0 16px 40px -8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+        display:flex; align-items:center; gap: 11px; font-size: 13px; font-weight: 600;
+        animation: slideInRight .35s var(--ease-premium) forwards;
+    }
+    .toast i { font-size: 16px; }
+    .toast.success { background: rgba(6, 78, 59, 0.85); border-color: rgba(16,185,129,.2); }
+    .toast.error { background: rgba(127, 29, 29, 0.85); border-color: rgba(239,68,68,.2); }
+    .toast.info { background: rgba(30, 58, 138, 0.85); border-color: rgba(59,130,246,.2); }
+
+    /* ============ COMMAND PALETTE — PREMIUM ============ */
+    #cmdk-backdrop { backdrop-filter: blur(8px) saturate(140%); background: rgba(15,23,42,0.35); }
+    #cmdk-backdrop > div {
+        background: var(--glass-bg-strong);
+        backdrop-filter: blur(28px) saturate(180%);
+        -webkit-backdrop-filter: blur(28px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 32px 64px -16px rgba(15,23,42,0.35);
+    }
+    .cmdk-item { transition: background .18s ease, padding-left .18s ease; }
+    .cmdk-item:hover, .cmdk-item.kbd-active { background: rgba(239, 246, 255, 0.8); padding-left: 20px; }
+
+    /* ============ ORDER OF DRAW FLOW ============ */
+    .flow-line { stroke-dasharray: 6 6; animation: dashFlow 1.2s linear infinite; }
+
+    /* ============ PREMIUM DARK MODE ============ */
+    [data-theme="dark"] {
+        --glass-bg: rgba(19, 28, 46, 0.55);
+        --glass-bg-strong: rgba(19, 28, 46, 0.75);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+        --glass-shadow-hover: 0 24px 56px -12px rgba(0, 0, 0, 0.6);
+    }
+    [data-theme="dark"] body {
+        background:
+            radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.08), transparent 45%),
+            radial-gradient(circle at 85% 90%, rgba(124, 58, 237, 0.08), transparent 45%),
+            #0a0f1c;
+        color: #e2e8f0;
+    }
+    [data-theme="dark"] .bg-white { background-color: rgba(19, 28, 46, 0.9) !important; }
+    [data-theme="dark"] .bg-slate-50, [data-theme="dark"] .bg-slate-50\/50, [data-theme="dark"] .bg-slate-50\/80 { background-color: rgba(15, 23, 40, 0.85) !important; }
+    [data-theme="dark"] .bg-slate-100 { background-color: #1e293b !important; }
+    [data-theme="dark"] .bg-slate-800 { background-color: #0b1220 !important; }
+    [data-theme="dark"] .border-slate-200, [data-theme="dark"] .border-slate-100, [data-theme="dark"] .border-slate-300 { border-color: rgba(255,255,255,0.08) !important; }
+    [data-theme="dark"] .text-slate-800, [data-theme="dark"] .text-slate-900 { color: #e6ecf5 !important; }
+    [data-theme="dark"] .text-slate-700 { color: #cbd5e1 !important; }
+    [data-theme="dark"] .text-slate-600 { color: #94a3b8 !important; }
+    [data-theme="dark"] .text-slate-500, [data-theme="dark"] .text-slate-400 { color: #64748b !important; }
+    [data-theme="dark"] .glass-panel { box-shadow: var(--glass-shadow); }
+    [data-theme="dark"] .shadow-sm, [data-theme="dark"] .shadow-md, [data-theme="dark"] .shadow-lg { box-shadow: 0 8px 24px rgba(0,0,0,.5) !important; }
+    [data-theme="dark"] #empty-state, [data-theme="dark"] #tray-empty { color: #475569; }
+    [data-theme="dark"] .bg-blue-50 { background-color: rgba(15, 36, 64, 0.8) !important; }
+    [data-theme="dark"] input, [data-theme="dark"] select, [data-theme="dark"] textarea { background-color: rgba(15, 23, 40, 0.8); color: #e2e8f0; border-color: rgba(255,255,255,0.1) !important; }
+    [data-theme="dark"] .filter-btn.bg-slate-100 { background-color: #1e293b !important; color: #94a3b8 !important; }
+
+    /* ---------------------------------------------------- THERMAL PRINTER CSS --------------------------------------------------- */
+    #print-render-zone { display: none; }
+    @media print {
+        body > *:not(#print-render-zone) { display: none !important; }
+        html, body { width: 70mm; height: 50mm; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: white; }
+        #print-render-zone { display: block !important; position: absolute; left: 0; top: 0; width: 70mm; height: 50mm; margin: 0; padding: 0; overflow: hidden; page-break-after: avoid; page-break-before: avoid; page-break-inside: avoid; }
+        @page { size: 70mm 50mm; margin: 0; }
+       .print-sticker { width: 70mm; height: 50mm; padding: 4mm; box-sizing: border-box; overflow: hidden; color: black; font-family: Arial, sans-serif; }
+    }
+</style>
+</head>
+<body class="flex h-screen text-slate-800">
+
+    <!-- Loading Splash -->
+    <div id="splash" class="fixed inset-0 z-[300] bg-slate-900 flex flex-col items-center justify-center gap-4">
+        <div class="w-16 h-16 rounded-2xl brand-badge flex items-center justify-center text-white font-extrabold text-2xl shadow-2xl animate-float">LC</div>
+        <div class="text-slate-400 text-xs font-semibold tracking-widest uppercase">Loading LabCollect Pro…</div>
+        <div class="w-40 h-1 bg-slate-700 rounded-full overflow-hidden"><div class="h-full w-1/3 bg-blue-500 rounded-full" style="animation: shimmer 1s linear infinite;"></div></div>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toast-stack"></div>
+
+    <!-- Command Palette -->
+    <div id="cmdk-backdrop" class="fixed inset-0 bg-slate-900/50 hidden items-start justify-center z-[150] pt-24" onclick="if(event.target===this) closeCmdk()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden animate-fade-in-scale border border-slate-200">
+            <div class="flex items-center gap-3 px-4 py-3 border-b border-slate-100">
+                <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                <input id="cmdk-input" type="text" placeholder="Search any test, e.g. 'CBC', 'PT/INR'…" class="flex-1 outline-none text-sm py-1 bg-transparent" oninput="renderCmdk()">
+                <kbd class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-400 font-bold">ESC</kbd>
+            </div>
+            <div id="cmdk-list" class="max-h-96 overflow-y-auto py-2"></div>
+        </div>
+    </div>
+
+    <!-- Far Left App Navigation -->
+    <nav class="w-20 bg-white border-r border-slate-200 flex flex-col items-center py-6 shrink-0 z-50 shadow-sm">
+        <div class="w-10 h-10 rounded-xl brand-badge flex items-center justify-center text-white font-bold text-xl mb-8 shadow-md">
+            L<span class="text-blue-200">C</span>
+        </div>
+
+        <div class="flex flex-col gap-1 w-full">
+            <button onclick="switchModule('module-guide')" id="nav-guide" class="nav-item active w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-vials text-xl"></i>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Guide</span>
+            </button>
+            <button onclick="switchModule('module-order')" id="nav-order" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-layer-group text-xl"></i>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Order</span>
+            </button>
+            <button onclick="switchModule('module-tray')" id="nav-tray" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all relative">
+                <i class="fa-solid fa-clipboard-list text-xl"></i>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Tray</span>
+                <span id="tray-badge" class="hidden absolute top-2 right-4 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pop">0</span>
+            </button>
+            <button onclick="switchModule('module-btct')" id="nav-btct" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-stopwatch text-xl"></i>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">BT/CT</span>
+            </button>
+            <button onclick="switchModule('module-print')" id="nav-print" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-print text-xl"></i>
+                <span class="text-[10px] font-semibold uppercase tracking-wider">Print</span>
+            </button>
+        </div>
+        <div class="mt-auto w-full flex flex-col items-center gap-1">
+            <button onclick="toggleTheme()" class="w-full py-3 flex flex-col items-center gap-1 text-slate-300 hover:text-slate-600 transition-all">
+                <i class="fa-solid fa-moon text-lg" id="theme-icon"></i>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Theme</span>
+            </button>
+            <button onclick="toggleAdmin()" id="nav-admin" class="w-full py-3 flex flex-col items-center gap-1 text-slate-300 hover:text-slate-600 transition-all">
+                <i class="fa-solid fa-lock text-lg" id="admin-icon"></i>
+                <span class="text-[9px] font-semibold uppercase tracking-wider">Admin</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative">
+
+        <!-- Global Top Bar -->
+        <header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-40 gap-4">
+            <div class="hidden lg:flex items-center gap-2 text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                <span class="mr-2 text-slate-400"><i class="fa-solid fa-sort-amount-down mr-1"></i> Order of Draw:</span>
+                <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Culture</div> <span class="text-slate-300">›</span>
+                <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-sky-300"></div> Lt Blue</div> <span class="text-slate-300">›</span>
+                <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-red-500"></div> Red</div> <span class="text-slate-300">›</span>
+                <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-green-500"></div> Green</div> <span class="text-slate-300">›</span>
+                <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-purple-500"></div> Lav/Pink</div> <span class="text-slate-300">›</span>
+                <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-gray-400"></div> Gray</div>
+            </div>
+
+            <button onclick="openCmdk()" class="hidden md:flex items-center gap-2 text-xs text-slate-400 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-300 transition-all">
+                <i class="fa-solid fa-magnifying-glass"></i> Quick search <kbd class="bg-white border border-slate-200 rounded px-1 text-[10px] font-bold ml-2">/</kbd>
+            </button>
+
+            <div id="live-clock" class="mono text-xs font-bold text-slate-400 hidden sm:block ml-auto"></div>
+
+            <div class="flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200" id="t-timer-box">
+                <i class="fa-solid fa-band-aid text-slate-400"></i>
+                <span id="t-time" class="font-mono font-bold text-sm text-slate-700 w-12 text-center">00:00</span>
+                <button onclick="toggleTourniquet()" id="t-btn" class="text-[11px] font-bold bg-white border border-slate-200 px-2 py-0.5 rounded text-blue-600 hover:bg-blue-50 shadow-sm transition-all">START</button>
+            </div>
+        </header>
+
+        <!-- ========================================== -->
+        <!-- MODULE 1: COLLECTION GUIDE                  -->
+        <!-- ========================================== -->
+        <div id="module-guide" class="flex-1 flex overflow-hidden w-full h-full module-view animate-fade-in">
+            <section class="w-[380px] bg-white border-r border-slate-200 flex flex-col h-full shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+                <div class="p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-slate-800">Test Directory</h2>
+                        <span id="test-count-badge" class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-full">0 tests</span>
+                    </div>
+                    <div class="relative mb-4">
+                        <i class="fa-solid fa-search absolute left-3.5 top-3 text-slate-400"></i>
+                        <input type="text" id="search-input-guide" placeholder="Search test, synonym…" class="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
+                    </div>
+                    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="filter-container">
+                        <button onclick="setFilter('All')" class="filter-btn active px-3 py-1 bg-slate-800 text-white text-xs font-semibold rounded-full shrink-0">All</button>
+                        <button onclick="setFilter('★ Favorites')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">★ Favorites</button>
+                        <button onclick="setFilter('Hematology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Hematology</button>
+                        <button onclick="setFilter('Chemistry')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Chemistry</button>
+                        <button onclick="setFilter('Coagulation')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Coagulation</button>
+                        <button onclick="setFilter('Microbiology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Microbiology</button>
+                        <button onclick="setFilter('Immunology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Immunology</button>
+                        <button onclick="setFilter('Toxicology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Toxicology</button>
+                        <button onclick="setFilter('Blood Bank')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Blood Bank</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto bg-white">
+                    <ul id="test-list" class="divide-y divide-slate-100"></ul>
+                </div>
+            </section>
+
+            <section class="flex-1 bg-slate-50/80 overflow-y-auto relative p-8">
+                <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                    <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 border border-slate-100 animate-float">
+                        <i class="fa-solid fa-microscope text-4xl text-blue-200"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-600">No Test Selected</h3>
+                    <p class="text-sm mt-1">Select a test from the directory to view protocol, or press <kbd class="bg-slate-100 border border-slate-200 rounded px-1.5 text-xs">/</kbd> to search.</p>
+                </div>
+
+                <div id="active-state" class="hidden h-full max-w-4xl mx-auto animate-fade-in-scale">
+                    <div class="flex justify-between items-start mb-6 gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2 flex-wrap">
+                                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded" id="det-dept">Dept</span>
+                                <span id="det-badges" class="flex gap-2"></span>
+                                <span id="admin-badge" class="hidden bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-200 animate-pulse"><i class="fa-solid fa-pen mr-1"></i>EDIT MODE</span>
+                            </div>
+                            <h1 id="det-title" class="text-3xl font-extrabold text-slate-900 tracking-tight">Test Name</h1>
+                            <p id="det-syn" class="text-sm font-medium text-slate-500 mt-1">Synonyms</p>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button onclick="toggleFavoriteCurrent()" id="fav-btn" class="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm hover:border-amber-300 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all" title="Add to favorites">
+                                <i class="fa-solid fa-star"></i>
+                            </button>
+                            <button onclick="addCurrentToTray()" class="px-4 h-10 rounded-full bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2" title="Add to collection tray">
+                                <i class="fa-solid fa-clipboard-list"></i> Add to Tray
+                            </button>
+                            <button onclick="adminDeleteCurrent()" id="admin-del-btn" class="hidden w-10 h-10 rounded-full bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 flex items-center justify-center transition-all" title="Delete test">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div id="tube-visual-container" class="glass-panel rounded-2xl p-4 flex flex-wrap justify-center gap-4 shadow-sm max-h-[400px] overflow-y-auto"></div>
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="glass-panel rounded-2xl p-6 shadow-sm card-hover">
+                                <h3 class="text-xs font-bold uppercase text-slate-400 mb-3"><i class="fa-solid fa-user-check text-blue-500 mr-2"></i> Patient Preparation</h3>
+                                <p id="det-prep" class="text-slate-700 font-medium editable-field" data-field="patientPrep">Prep data</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="glass-panel rounded-2xl p-5 shadow-sm card-hover">
+                                    <h3 class="text-[10px] font-bold uppercase text-slate-400 mb-2"><i class="fa-solid fa-rotate text-purple-500 mr-2"></i> Inversions</h3>
+                                    <p id="det-inv" class="text-lg font-bold text-slate-800 editable-field" data-field="inversions">8-10x</p>
+                                </div>
+                                <div class="glass-panel rounded-2xl p-5 shadow-sm card-hover">
+                                    <h3 class="text-[10px] font-bold uppercase text-slate-400 mb-2"><i class="fa-solid fa-droplet text-red-500 mr-2"></i> Min Volume</h3>
+                                    <p id="det-vol" class="text-lg font-bold text-slate-800 editable-field" data-field="minVolume">2.0 mL</p>
+                                </div>
+                            </div>
+                            <div class="glass-panel rounded-2xl p-6 shadow-sm card-hover">
+                                <h3 class="text-xs font-bold uppercase text-slate-400 mb-3"><i class="fa-solid fa-temperature-half text-orange-500 mr-2"></i> Handling & Transport</h3>
+                                <p id="det-hand" class="text-slate-700 font-medium editable-field" data-field="handling">Handling data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODULE 2: ORDER OF DRAW (NEW)               -->
+        <!-- ========================================== -->
+        <div id="module-order" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">CLSI Order of Draw</h1>
+                    <p class="text-slate-500">Tap any tube to learn why its sequence position prevents cross-contamination.</p>
+                </div>
+                <div class="relative overflow-x-auto pb-4">
+                    <svg width="100%" height="26" class="mb-2"><line x1="5%" y1="13" x2="95%" y2="13" stroke="#cbd5e1" stroke-width="3" class="flow-line"/></svg>
+                    <div id="order-flow" class="flex gap-4 justify-between min-w-[900px]"></div>
+                </div>
+                <div id="order-detail" class="mt-10 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 animate-fade-in">
+                    <div class="flex items-center gap-4 text-slate-400"><i class="fa-solid fa-hand-pointer text-2xl"></i><p>Select a tube above to see the clinical rationale.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODULE 3: COLLECTION TRAY (NEW)             -->
+        <!-- ========================================== -->
+        <div id="module-tray" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-8">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Collection Tray</h1>
+                        <p class="text-slate-500">Build a patient's draw list — tubes auto-consolidate across shared additive types.</p>
+                    </div>
+                    <button onclick="clearTray()" class="text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-full border border-red-100 transition-all"><i class="fa-solid fa-trash mr-1"></i> Clear Tray</button>
+                </div>
+
+                <div id="tray-empty" class="bg-white rounded-2xl border border-dashed border-slate-300 p-16 text-center text-slate-400">
+                    <i class="fa-solid fa-clipboard-list text-4xl mb-4 text-slate-300"></i>
+                    <p class="font-semibold">Tray is empty</p>
+                    <p class="text-sm mt-1">Open the Guide, pick a test, and click "Add to Tray".</p>
+                </div>
+
+                <div id="tray-content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                        <h3 class="text-xs font-bold uppercase text-slate-400 mb-4">Ordered Tests <span id="tray-count" class="text-slate-800"></span></h3>
+                        <ul id="tray-list" class="divide-y divide-slate-100"></ul>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                            <h3 class="text-xs font-bold uppercase text-slate-400 mb-4">Consolidated Tubes</h3>
+                            <div id="tray-tubes" class="flex flex-wrap gap-3 justify-center"></div>
+                        </div>
+                        <button onclick="printTray()" class="w-full bg-slate-900 hover:bg-blue-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-colors flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> Generate Consolidated Label
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODULE 4: BT/CT TIMERS                     -->
+        <!-- ========================================== -->
+        <div id="module-btct" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-8">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Bleeding & Clotting Timers</h1>
+                        <p class="text-slate-500">Visual pulse alerts every 30 seconds for blotting/tilting.</p>
+                    </div>
+                    <button onclick="toggleBeep()" id="beep-btn" class="text-xs font-bold bg-white border border-slate-200 px-4 py-2 rounded-full text-slate-500 hover:border-blue-300 transition-all shadow-sm">
+                        <i class="fa-solid fa-volume-xmark mr-1" id="beep-icon"></i> Sound: Off
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 flex flex-col items-center relative overflow-hidden card-hover" id="bt-card">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-red-400"></div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">Bleeding Time (BT)</h2>
+                        <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-6">Duke / Ivy Method</p>
+                        <div class="w-48 h-48 rounded-full border-8 border-slate-100 flex items-center justify-center mb-8 transition-all duration-300" id="bt-display-ring">
+                            <span class="text-5xl font-mono font-bold text-slate-700" id="bt-time">00:00</span>
+                        </div>
+                        <div class="flex gap-4 w-full">
+                            <button onclick="toggleBtCt('bt')" id="bt-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-sm transition-colors">START</button>
+                            <button onclick="recordBtCt('bt')" class="px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-colors" title="Record to history"><i class="fa-solid fa-flag-checkered"></i></button>
+                            <button onclick="resetBtCt('bt')" class="px-6 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition-colors"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 flex flex-col items-center relative overflow-hidden card-hover" id="ct-card">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-amber-400"></div>
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">Clotting Time (CT)</h2>
+                        <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-6">Capillary / Lee-White</p>
+                        <div class="w-48 h-48 rounded-full border-8 border-slate-100 flex items-center justify-center mb-8 transition-all duration-300" id="ct-display-ring">
+                            <span class="text-5xl font-mono font-bold text-slate-700" id="ct-time">00:00</span>
+                        </div>
+                        <div class="flex gap-4 w-full">
+                            <button onclick="toggleBtCt('ct')" id="ct-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-sm transition-colors">START</button>
+                            <button onclick="recordBtCt('ct')" class="px-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl transition-colors" title="Record to history"><i class="fa-solid fa-flag-checkered"></i></button>
+                            <button onclick="resetBtCt('ct')" class="px-6 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl transition-colors"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold uppercase text-slate-400"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Session History</h3>
+                        <button onclick="clearBtctHistory()" class="text-[11px] font-bold text-red-400 hover:text-red-600">Clear log</button>
+                    </div>
+                    <div id="btct-history-empty" class="text-sm text-slate-400 py-6 text-center">No results recorded yet this session.</div>
+                    <table class="w-full text-sm hidden" id="btct-history-table">
+                        <thead><tr class="text-left text-[10px] uppercase text-slate-400 border-b border-slate-100"><th class="pb-2">Method</th><th class="pb-2">Duration</th><th class="pb-2">Time</th></tr></thead>
+                        <tbody id="btct-history-body" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODULE 5: PRINT LAB                        -->
+        <!-- ========================================== -->
+        <div id="module-print" class="hidden overflow-hidden w-full h-full module-view bg-slate-50 flex">
+            <section class="w-[300px] bg-white border-r border-slate-200 flex flex-col h-full shrink-0 z-10">
+                <div class="p-5 border-b border-slate-100 bg-slate-800 text-white">
+                    <h2 class="text-lg font-bold"><i class="fa-solid fa-print mr-2 text-slate-400"></i> Sticker Templates</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                    <button onclick="loadTemplate('mt')" class="w-full text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:shadow-sm transition-all focus:ring-2 focus:ring-blue-200 group">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">MT Test Guide</div>
+                        <div class="text-[10px] text-slate-400 mt-1">72hr + Bengali Allergy Warn</div>
+                    </button>
+                    <button onclick="loadTemplate('ogtt')" class="w-full text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:shadow-sm transition-all focus:ring-2 focus:ring-blue-200 group">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">OGTT (Glucose)</div>
+                        <div class="text-[10px] text-slate-400 mt-1">1hr / 2hr Draw Reminders</div>
+                    </button>
+                    <button onclick="loadTemplate('btct-result')" class="w-full text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:shadow-sm transition-all focus:ring-2 focus:ring-blue-200 group">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">BT/CT Result</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Print final times for patient file</div>
+                    </button>
+                    <button onclick="loadTemplate('tray')" class="w-full text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:shadow-sm transition-all focus:ring-2 focus:ring-blue-200 group">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">Tray Consolidated</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Auto-filled from Collection Tray</div>
+                    </button>
+                    <button onclick="loadTemplate('custom')" class="w-full text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:shadow-sm transition-all focus:ring-2 focus:ring-blue-200 group">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">Manual / Custom Barcode</div>
+                        <div class="text-[10px] text-slate-400 mt-1">Type custom text and barcode</div>
+                    </button>
+                </div>
+                <div class="p-4 border-t border-slate-100">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase mb-2">Recent Prints</div>
+                    <div id="recent-prints" class="space-y-1 text-[11px] text-slate-500 max-h-24 overflow-y-auto">None yet.</div>
+                </div>
+            </section>
+
+            <section class="flex-1 flex flex-col p-8 overflow-y-auto">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center gap-4 shadow-sm">
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600"><i class="fa-solid fa-barcode"></i></div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-blue-900 mb-1">Hardware Scanner Active</h3>
+                        <p class="text-xs text-blue-700">Ensure cursor is in the box below, then scan barcode to auto-fill.</p>
+                    </div>
+                    <input type="text" id="scanner-input" placeholder="Scan or type ID..." class="w-64 border-2 border-blue-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-600 font-mono text-sm shadow-inner" oninput="updatePreviewBarcode()">
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col h-fit">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4 border-b pb-2" id="print-editor-title">Template Editor</h3>
+                        <div id="editor-dynamic-fields" class="space-y-4"></div>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Thermal Preview</h3>
+                        <div class="bg-white border-2 border-slate-300 shadow-lg p-4 relative animate-fade-in-scale" style="width: 350px; height: 250px; overflow: hidden;" id="sticker-preview"></div>
+                        <button onclick="executePrint()" class="mt-8 bg-slate-900 hover:bg-blue-600 text-white font-bold py-3 px-12 rounded-full shadow-lg transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-print"></i> SEND TO PRINTER
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- Hidden Zone: Used strictly for window.print() layout -->
+    <div id="print-render-zone">
+        <div class="print-sticker" id="print-sticker-content"></div>
+    </div>
+
+    <!-- Admin Auth Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-full border border-slate-200 transform transition-all scale-95 opacity-0" id="login-box">
+            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fa-solid fa-shield-halved text-xl text-slate-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-1">Admin Access</h3>
+            <p class="text-sm text-slate-500 mb-6">Unlock protocol data editing. (PW: admin)</p>
+            <input type="password" id="admin-password" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm font-medium" placeholder="Enter password">
+            <div class="flex gap-3">
+                <button onclick="closeAdminModal()" class="flex-1 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancel</button>
+                <button onclick="authenticateAdmin()" class="flex-1 py-2.5 text-sm font-bold bg-slate-900 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm">Unlock</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Toolbar (visible when unlocked) -->
+    <div id="admin-toolbar" class="hidden fixed bottom-5 left-24 z-[90] bg-slate-900 text-white rounded-2xl shadow-2xl px-4 py-3 items-center gap-3 animate-slide-in">
+        <i class="fa-solid fa-pen-ruler text-amber-400"></i>
+        <span class="text-xs font-bold">Admin Mode — click any highlighted field to edit</span>
+        <button onclick="openAddTestModal()" class="text-[11px] font-bold bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-plus mr-1"></i>New Test</button>
+        <button onclick="exportData()" class="text-[11px] font-bold bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-download mr-1"></i>Export</button>
+    </div>
+
+    <!-- Add Test Modal -->
+    <div id="add-test-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-[100]">
+        <div class="bg-white p-7 rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold text-slate-900 mb-4"><i class="fa-solid fa-vial-circle-check text-blue-500 mr-2"></i>Add New Test</h3>
+            <div class="space-y-3 text-sm">
+                <input id="new-name" placeholder="Test Name" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                <input id="new-syn" placeholder="Synonyms" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                <div class="grid grid-cols-2 gap-3">
+                    <input id="new-dept" placeholder="Department" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                    <select id="new-tube" class="w-full border border-slate-300 rounded-lg px-3 py-2"></select>
+                </div>
+                <input id="new-prep" placeholder="Patient Preparation" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                <div class="grid grid-cols-2 gap-3">
+                    <input id="new-inv" placeholder="Inversions" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                    <input id="new-vol" placeholder="Min Volume" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+                </div>
+                <input id="new-hand" placeholder="Handling & Transport" class="w-full border border-slate-300 rounded-lg px-3 py-2">
+            </div>
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeAddTestModal()" class="flex-1 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancel</button>
+                <button onclick="saveNewTest()" class="flex-1 py-2.5 text-sm font-bold bg-slate-900 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm">Save Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIG & DATABASES
+        // ==========================================
+      const tubes = {
+    'culture': { name: 'Blood Culture Bottle', additive: 'Broth Mixture', color: 'var(--tube-culture)', liq: '#b45309' },
+    'light_blue': { name: 'Light Blue Top', additive: 'Sodium Citrate (3.2%)', color: 'var(--tube-light-blue)', liq: '#dc2626' },
+    'red': { name: 'Red Top', additive: 'Clot Activator', color: 'var(--tube-red)', liq: '#dc2626' },
+    'green': { name: 'Green Top', additive: 'Lithium/Sodium Heparin', color: 'var(--tube-green)', liq: '#dc2626' },
+    'lavender': { name: 'Lavender Top', additive: 'K2/K3 EDTA', color: 'var(--tube-lavender)', liq: '#dc2626' },
+    'pink': { name: 'Pink Top', additive: 'K2 EDTA (Blood Bank)', color: 'var(--tube-pink)', liq: '#dc2626' },
+    'gray': { name: 'Gray Top', additive: 'Sodium Fluoride/Oxalate', color: 'var(--tube-gray)', liq: '#dc2626' },
+    'royal_blue': { name: 'Royal Blue Top', additive: 'EDTA or Heparin (Trace Metal Free)', color: 'var(--tube-royal-blue)', liq: '#dc2626' },
+    'yellow': { name: 'Yellow Top (ACD)', additive: 'Acid Citrate Dextrose', color: 'var(--tube-yellow)', liq: '#dc2626' }
+};
+
+const testDatabase = [
+    // --- EXISTING TESTS (1-12) ---
+    { id: 1, name: 'Complete Blood Count (CBC)', syn: 'Hemogram', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'No special preparation.', inversions: '8-10 times gently', minVolume: '2.0 mL', handling: 'Room temp for 24h', tags: ['Routine'] },
+    { id: 2, name: 'Prothrombin Time (PT/INR)', syn: 'Pro Time', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'Note anticoagulant therapy.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line (1:9)', handling: 'Process within 4h', tags: [] },
+    { id: 3, name: 'Comprehensive Metabolic Panel', syn: 'CMP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting 10-12 hours preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
+    { id: 4, name: 'Lipid Profile', syn: 'Lipid Profile', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Strict 12-hour fast required. Water only.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Allow to clot 30-60 min', tags: ['Fasting'] },
+    { id: 5, name: 'Hemoglobin A1c', syn: 'HbA1c', dept: 'Chemistry', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Keep refrigerated if delayed', tags: [] },
+    { id: 6, name: 'Erythrocyte Sedimentation Rate', syn: 'ESR', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Process within 4h', tags: [] },
+    { id: 7, name: 'D-Dimer', syn: 'd-dimer', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'STAT collection priority.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Centrifuge immediately', tags: ['STAT'] },
+    { id: 8, name: 'Thyroid Stimulating Hormone', syn: 'TSH', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Morning draw preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 9, name: 'Vitamin D (25-OH)', syn: 'Vit D', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Protect from light if possible', tags: [] },
+    { id: 10, name: 'Lactic Acid', syn: 'Lactate', dept: 'Chemistry', tubeId: 'gray', patientPrep: 'Draw WITHOUT tourniquet to prevent elevation.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Place on ICE immediately', tags: ['STAT'] },
+    { id: 11, name: 'Blood Culture (Aerobic)', syn: 'BCx', dept: 'Microbiology', tubeId: 'culture', patientPrep: 'Strict aseptic skin prep (Chlorhexidine).', inversions: '8-10 times gently', minVolume: '8-10 mL per bottle', handling: 'Do NOT refrigerate', tags: ['STAT'] },
+  
+
+    // --- NEWLY ADDED TESTS: HEMATOLOGY & COAGULATION ---
+    { id: 13, name: 'Basic Metabolic Panel', syn: 'BMP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine', 'Fasting'] },
+    { id: 14, name: 'Activated Partial Thromboplastin Time', syn: 'aPTT, PTT', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'Note heparin therapy.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Process within 4h', tags: ['STAT'] },
+    { id: 15, name: 'Fibrinogen Activity', syn: 'Factor I', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'None required.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Process within 4h', tags: [] },
+    { id: 16, name: 'Reticulocyte Count', syn: 'Retic', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Room temp for 24h', tags: [] },
+    { id: 17, name: 'Peripheral Blood Smear', syn: 'PBS, Diff', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'Freshly drawn preferred.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Make smear within 2h', tags: [] },
+    { id: 18, name: 'Factor VIII Activity', syn: 'AHF', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'None required.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Centrifuge immediately, freeze plasma', tags: ['Special Handling'] },
+    { id: 19, name: 'Factor IX Activity', syn: 'Christmas Factor', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'None required.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Centrifuge immediately, freeze plasma', tags: ['Special Handling'] },
+    { id: 20, name: 'Sickle Cell Screen', syn: 'Sickle Dex', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Room temp for 72h', tags: [] },
+    { id: 21, name: 'G6PD Quantitative', syn: 'Glucose-6-Phosphate Dehydrogenase', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'Draw before transfusion.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Refrigerate if delayed', tags: ['Special Handling'] },
+    { id: 22, name: 'Heparin Anti-Xa', syn: 'Anti-Xa', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'Timing critical based on dosing.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Double centrifuge, freeze plasma', tags: ['STAT'] },
+    { id: 23, name: 'Cold Agglutinin Titer', syn: 'Cold Agg', dept: 'Hematology', tubeId: 'red', patientPrep: 'Keep patient warm prior to draw.', inversions: '5 times', minVolume: '2.0 mL', handling: 'Do NOT refrigerate whole blood', tags: ['Special Handling'] },
+    { id: 24, name: 'Cryoglobulins', syn: 'Cryo', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '5.0 mL', handling: 'Transport at 37°C (Warm)', tags: ['Special Handling'] },
+
+    // --- NEWLY ADDED TESTS: CHEMISTRY & ENDOCRINOLOGY ---
+    { id: 25, name: 'Troponin I', syn: 'Trop, cTnI', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Serial draws to monitor trend.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'STAT processing preferred', tags: ['STAT', 'Routine'] },
+    { id: 26, name: 'NT Pro BNP (Brain Natriuretic Peptide)', syn: 'NT-proBNP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge within 2h', tags: ['STAT'] },
+    { id: 27, name: 'Fasting Blood Glucose', syn: 'FBG, Glu', dept: 'Chemistry', tubeId: 'gray', patientPrep: 'Strict 8-12 hour fast.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Process within 1h', tags: ['Fasting'] },
+    { id: 28, name: '2-Hour Postprandial Glucose', syn: '2HR PPG', dept: 'Chemistry', tubeId: 'gray', patientPrep: 'Eat exact meal, draw exactly 2h after.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Process within 1h', tags: ['Special Handling'] },
+    { id: 29, name: 'Oral Glucose Tolerance Test', syn: 'OGTT, GTT', dept: 'Chemistry', tubeId: 'gray', patientPrep: '3-day high carb diet, 10h fast prior.', inversions: '8-10 times', minVolume: '1.0 mL per draw', handling: 'Process each draw immediately', tags: ['Fasting', 'Special Handling'] },
+    { id: 30, name: 'Comprehensive Iron Panel', syn: 'Iron Studies', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting 12h. Draw in AM.', inversions: '5 times', minVolume: '2.0 mL serum', handling: 'Separate from iron supplements', tags: ['Fasting'] },
+    { id: 31, name: 'Ferritin', syn: 'Ferr', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Room temp for 7 days', tags: [] },
+    { id: 32, name: 'Ammonia Level', syn: 'NH3', dept: 'Chemistry', tubeId: 'lavender', patientPrep: 'No smoking 8h prior. Rest quietly, Morning Sample.', inversions: '8-10 times', minVolume: '2.0 mL plasma', handling: 'Place on ICE, spin immediately', tags: ['STAT', 'Special Handling'] },
+   { id: 33, name: 'Cortisol (Morning)', syn: 'Cortisol Morning', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Collect between 8:30-9:00 AM. Patient should rest 15 min before collection, Fasting not required', inversions: '0 times', minVolume: '1.0 mL serum', handling: 'Allow blood to clot for 30 min before centrifugation.', tags: ['Time Critical'] },
+
+
+    { id: 34, name: 'Insulin, Fasting', syn: 'Fasting Insulin', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Strict 8-12 hour fast.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
+    { id: 35, name: 'C-Peptide', syn: 'Connecting Peptide', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting 10-12h required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
+    { id: 36, name: 'Parathyroid Hormone', syn: 'PTH, Intact', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Draw before 10 AM if possible.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge immediately, freeze', tags: ['Special Handling'] },
+    { id: 37, name: 'Vitamin B12', syn: 'Cobalamin', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Protect from light', tags: ['Fasting'] },
+    { id: 38, name: 'Folate (Folic Acid)', syn: 'Vitamin B9', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred. No B-complex 3 days prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Protect from light', tags: ['Fasting'] },
+    { id: 39, name: 'Homocysteine', syn: 'Hcy', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge immediately, freeze', tags: [] },
+    { id: 40, name: 'Magnesium', syn: 'Mg', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine'] },
+    { id: 41, name: 'Phosphorus', syn: 'Phosphate', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred. Draw in AM.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
+    { id: 42, name: 'Uric Acid', syn: 'UA', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Avoid alcohol and high-purine foods.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 43, name: 'Creatine Kinase', syn: 'CK, CPK', dept: 'Chemistry', tubeId: 'red', patientPrep: 'No strenuous exercise 24h prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge within 2h', tags: [] },
+    { id: 44, name: 'Lactate Dehydrogenase', syn: 'LDH', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge within 2h', tags: [] },
+    { id: 45, name: 'Amylase', syn: 'Amy', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 46, name: 'Lipase', syn: 'Lip', dept: 'Chemistry', tubeId: 'red', patientPrep: 'NPO 8h preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
+    { id: 47, name: 'Gamma-Glutamyl Transferase', syn: 'GGT', dept: 'Chemistry', tubeId: 'red', patientPrep: 'No alcohol 24h prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+
+    // --- NEWLY ADDED TESTS: TOXICOLOGY & THERAPEUTIC DRUG MONITORING ---
+    { id: 48, name: 'Acetaminophen Level', syn: 'Tylenol, APAP', dept: 'Toxicology', tubeId: 'red', patientPrep: 'STAT collection. Note time of ingestion.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'STAT processing', tags: ['STAT'] },
+    { id: 49, name: 'Salicylate Level', syn: 'Aspirin', dept: 'Toxicology', tubeId: 'red', patientPrep: 'STAT collection. Note time of ingestion.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'STAT processing', tags: ['STAT'] },
+    { id: 50, name: 'Ethanol Level', syn: 'Blood Alcohol, ETOH', dept: 'Toxicology', tubeId: 'gray', patientPrep: 'Do NOT use alcohol swab for prep. Use iodine.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Keep sealed, refrigerate', tags: ['Special Handling'] },
+    { id: 51, name: 'Digoxin', syn: 'Lanoxin', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Draw exactly 6-8h post-dose.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
+    { id: 52, name: 'Vancomycin Trough', syn: 'Vanc Trough', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Draw just before 4th dose.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['STAT', 'Therapeutic Drug Monitoring'] },
+    { id: 53, name: 'Phenytoin', syn: 'Dilantin', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Note dosing schedule.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
+    { id: 54, name: 'Valproic Acid', syn: 'Depakote', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Trough preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
+    { id: 55, name: 'Lithium Level', syn: 'Li', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Trough draw 12h post-dose. Do not use green tube.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
+
+    // --- NEWLY ADDED TESTS: TRACE METALS (SPECIALTY) ---
+    { id: 56, name: 'Lead (Blood)', syn: 'Pb', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'Avoid environmental exposure prior.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Special Handling', 'Trace Element'] },
+    { id: 57, name: 'Copper (Blood)', syn: 'Cu', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Special Handling', 'Trace Element'] },
+    { id: 58, name: 'Zinc (Blood)', syn: 'Zn', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'Fasting preferred. No zinc supplements 3 days prior.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Fasting', 'Trace Element'] },
+    { id: 59, name: 'Arsenic (Blood)', syn: 'As', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'Avoid seafood 48h prior.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Special Handling', 'Trace Element'] },
+
+    // --- NEWLY ADDED TESTS: IMMUNOLOGY, SEROLOGY & MICROBIOLOGY ---
+    { id: 60, name: 'C-Reactive Protein', syn: 'CRP', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine'] },
+    { id: 61, name: 'High-Sensitivity CRP', syn: 'hs-CRP, Cardio CRP', dept: 'Immunology', tubeId: 'red', patientPrep: 'No illness 2 weeks prior. Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
+    { id: 62, name: 'Rheumatoid Factor', syn: 'RF', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 63, name: 'Antinuclear Antibody', syn: 'ANA', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 64, name: 'Monospot', syn: 'Heterophile Antibody', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['STAT'] },
+    { id: 65, name: 'HIV 1/2 Antigen/Antibody', syn: '4th Gen HIV', dept: 'Serology', tubeId: 'red', patientPrep: 'Consent required in some states.', inversions: '5 times', minVolume: '2.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine'] },
+    { id: 66, name: 'Hepatitis B Surface Antigen', syn: 'HBsAg', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 67, name: 'Hepatitis C Antibody', syn: 'Anti-HCV', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 68, name: 'Rapid Plasma Reagin', syn: 'RPR, Syphilis', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 69, name: 'Rubella Antibodies', syn: 'German Measles IgG/IgM', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 70, name: 'Blood Culture (Anaerobic)', syn: 'Anaerobic BCx', dept: 'Microbiology', tubeId: 'culture', patientPrep: 'Strict aseptic skin prep.', inversions: '8-10 times gently', minVolume: '8-10 mL per bottle', handling: 'Do NOT refrigerate', tags: ['STAT'] },
+
+    // --- NEWLY ADDED TESTS: BLOOD BANK & MOLECULAR ---
+    { id: 71, name: 'Crossmatch', syn: 'Crossmatch', dept: 'Blood Bank', tubeId: 'lavender', patientPrep: 'Verify patient identity 2x. Recent transfusion history?', inversions: '8-10 times', minVolume: '7.0 mL', handling: 'Keep at room temp', tags: ['STAT'] },
+    { id: 72, name: 'Blood Grouping & Rh typing', syn: 'Blood Group', dept: 'Blood Bank', tubeId: 'lavender', patientPrep: 'Verify patient identity 2x.', inversions: '8-10 times', minVolume: '7.0 mL', handling: 'Keep at room temp', tags: ['Routine'] },
+    { id: 73, name: 'Direct Coombs Test', syn: 'DCT, Direct Coombs', dept: 'Blood Bank', tubeId: 'lavender', patientPrep: 'Draw before transfusion if possible.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Keep at room temp', tags: [] },
+    { id: 74, name: 'Indirect Coombs Test', syn: 'ICT, Indirect Coombs', dept: 'Blood Bank', tubeId: 'red', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '5.0 mL', handling: 'Keep at room temp', tags: [] },
+    { id: 75, name: 'Flow Cytometry', syn: 'Flow, Immunophenotyping', dept: 'Molecular', tubeId: 'green', patientPrep: 'Fresh specimen critical.', inversions: '8-10 times', minVolume: '5.0 mL', handling: 'Room temp, deliver immediately', tags: ['Special Handling'] },
+    { id: 76, name: 'HLA B27', syn: 'HLA B27', dept: 'Molecular', tubeId: 'lavender', patientPrep: 'Consent required. Verify identity.', inversions: '8-10 times', minVolume: '8.0 mL', handling: 'Room temp, deliver immediately', tags: ['Special Handling'] },
+
+    // --- NEWLY ADDED TESTS: TUMOR MARKERS ---
+    { id: 77, name: 'Prostate Specific Antigen', syn: 'PSA', dept: 'Chemistry', tubeId: 'red', patientPrep: 'No ejaculation or prostate exam 48h prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 78, name: 'Carcinoembryonic Antigen', syn: 'CEA', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 79, name: 'Cancer Antigen 125', syn: 'CA-125', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 80, name: 'Alpha-Fetoprotein', syn: 'AFP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
+    { id: 101, name: 'Cortisol (Evening)', syn: 'Cortisol evening', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Collect between 4:00-5:00 PM. Patient should rest 15 min before collection.', inversions: '0 times', minVolume: '1.0 mL serum', handling: 'Allow blood to clot for 30 min before centrifugation.', tags: ['Time Critical'] },
+
+{ id: 102, name: 'Basal Cortisol', syn: 'Cortisol Basal', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Collect between 8:30-9:00 AM before ACTH stimulation or corticosteroid administration. Fasting Sample is required, Rest 15 min before collection.', inversions: '0 times', minVolume: '1.0 mL serum', handling: 'Allow blood to clot for 30 min before centrifugation.', tags: ['Baseline', 'Time Critical'] },
+
+{ id: 103, name: 'Fibrin Degradation Products (FDP)', syn: 'FDP', dept: 'Hematology', tubeId: 'light_blue', patientPrep: 'No special preparation required.', inversions: '3-4 times', minVolume: '2.7 mL plasma', handling: 'Centrifuge promptly and separate plasma. Freeze if testing is delayed.', tags: ['Coagulation'] },
+
+{ id: 104, name: 'Factor V', syn: 'Factor 5', dept: 'Hematology', tubeId: 'light_blue', patientPrep: 'Avoid heparin contamination. Inform physician if on anticoagulants.', inversions: '3-4 times', minVolume: '2.7 mL plasma', handling: 'Prepare platelet-poor plasma within 1 hour. Freeze immediately if not tested promptly.', tags: ['Coagulation', 'Special Handling'] },
+
+{ 
+        id: 105, 
+        name: 'HOMA-IR (Insulin Resistance)', 
+        syn: 'HOMA Index', 
+        dept: 'Chemistry', 
+        tubeId: ['red', 'gray'], // <--- Note the Array here!
+        patientPrep: 'Strict 8-12 hour fast required.', 
+        inversions: '5-10 times for both', 
+        minVolume: '1.0 mL per tube', 
+        handling: 'Clot Red tube 30m, spin Gray immediately', 
+        tags: ['Fasting', 'Double Tube'] 
+    },
+    
+    // --- NEWLY ADDED MULTI-TUBE & SPECIALTY TESTS ---
+    { 
+        id: 106, 
+        name: 'Serum/Plasma Osmolality', 
+        syn: 'Osmolality Panel', 
+        dept: 'Chemistry', 
+        tubeId: ['red', 'gray'], 
+        patientPrep: 'No special preparation.', 
+        inversions: '5 times (Red), 8-10 times (Gray)', 
+        minVolume: '1.0 mL per tube', 
+        handling: 'Clot Red 30 min, centrifuge both within 2h', 
+        tags: ['Double Tube'] 
+    },
+    { 
+        id: 107, 
+        name: 'Coombs Test Panel (Direct & Indirect)', 
+        syn: 'DCT & ICT', 
+        dept: 'Blood Bank', 
+        tubeId: ['red', 'lavender'], 
+        patientPrep: 'Verify patient identity strictly.', 
+        inversions: '5 times (Red), 8-10 times (Lavender)', 
+        minVolume: '5.0 mL (Red), 2.0 mL (Lavender)', 
+        handling: 'Keep at room temp. Do not refrigerate.', 
+        tags: ['Double Tube'] 
+    },
+    { 
+        id: 108, 
+        name: 'Lupus Anticoagulant', 
+        syn: 'LA, Lupus Inhibitor', 
+        dept: 'Coagulation', 
+        tubeId: 'light_blue', 
+        patientPrep: 'Patient should not be on Heparin/Coumadin.', 
+        inversions: '3-4 times strictly', 
+        minVolume: 'Fill strictly to line (1:9 ratio)', 
+        handling: 'Double centrifuge, freeze platelet-poor plasma', 
+        tags: ['Special Handling'] 
+    },
+    { 
+        id: 109, 
+        name: 'Anti-Phospholipid Antibody', 
+        syn: 'APA Panel', 
+        dept: 'Immunology', 
+        tubeId: 'red', 
+        patientPrep: 'None required.', 
+        inversions: '5 times', 
+        minVolume: '1.0 mL serum', 
+        handling: 'Clot 30 min before spin', 
+        tags: [] 
+    },
+    { 
+        id: 110, 
+        name: 'Anti-Cardiolipin Antibody', 
+        syn: 'ACA, aCL', 
+        dept: 'Immunology', 
+        tubeId: 'red', 
+        patientPrep: 'None required.', 
+        inversions: '5 times', 
+        minVolume: '1.0 mL serum', 
+        handling: 'Clot 30 min before spin', 
+        tags: [] 
+    },
+    { 
+        id: 111, 
+        name: 'QuantiFERON-TB Gold', 
+        syn: 'IGRA, TB Blood Test', 
+        dept: 'Microbiology', 
+        tubeId: 'green', 
+        patientPrep: 'Collect Monday-Thursday only to ensure lab viability.', 
+        inversions: '10 times vigorously to coat tube', 
+        minVolume: '4.0 mL Whole Blood', 
+        handling: 'Keep at room temp (17-27°C). Must incubate within 16h.', 
+        tags: ['Special Handling', 'Time Critical'] 
+    },
+];
+
+        // ==========================================
+        // STATE & PERSISTENCE
+        // ==========================================
+        let currentFilter = 'All';
+        let currentTestId = null;
+        let currentTemplate = '';
+        let isAdmin = false;
+        let soundOn = false;
+
+        const LS = {
+            get(key, fallback) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch(e) { return fallback; } },
+            set(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+        };
+
+        let favorites = new Set(LS.get('lc_favorites', []));
+        let tray = LS.get('lc_tray', []); // array of test ids
+        let btctHistory = LS.get('lc_btct_history', []);
+        let customTests = LS.get('lc_custom_tests', []);
+        let deletedIds = new Set(LS.get('lc_deleted_ids', []));
+        let editOverrides = LS.get('lc_edit_overrides', {}); // {id: {field: value}}
+
+        // Merge persisted admin edits + custom additions + deletions into testDatabase
+        testDatabase.forEach(t => {
+            if (editOverrides[t.id]) Object.assign(t, editOverrides[t.id]);
+        });
+        customTests.forEach(t => testDatabase.push(t));
+        for (let i = testDatabase.length - 1; i >= 0; i--) {
+            if (deletedIds.has(testDatabase[i].id)) testDatabase.splice(i, 1);
+        }
+
+        // ==========================================
+        // TOASTS
+        // ==========================================
+        function showToast(msg, type = 'info', icon = 'fa-circle-info') {
+            const stack = document.getElementById('toast-stack');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = `<i class="fa-solid ${icon}"></i><span>${msg}</span>`;
+            stack.appendChild(el);
+            setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(30px)'; el.style.transition = 'all .3s ease'; setTimeout(() => el.remove(), 300); }, 2600);
+        }
+
+        // ==========================================
+        // THEME
+        // ==========================================
+        function toggleTheme() {
+            const html = document.documentElement;
+            const dark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', dark ? 'light' : 'dark');
+            document.getElementById('theme-icon').className = dark ? 'fa-solid fa-moon text-lg' : 'fa-solid fa-sun text-lg';
+            LS.set('lc_theme', dark ? 'light' : 'dark');
+        }
+        (function initTheme() {
+            const saved = LS.get('lc_theme', 'light');
+            document.documentElement.setAttribute('data-theme', saved);
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('theme-icon').className = saved === 'dark' ? 'fa-solid fa-sun text-lg' : 'fa-solid fa-moon text-lg';
+            });
+        })();
+
+        // ==========================================
+        // LIVE CLOCK
+        // ==========================================
+        function tickClock() {
+            const el = document.getElementById('live-clock');
+            if (el) el.innerText = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        setInterval(tickClock, 1000);
+
+        // ==========================================
+        // COMMAND PALETTE
+        // ==========================================
+        function openCmdk() {
+            document.getElementById('cmdk-backdrop').classList.remove('hidden');
+            document.getElementById('cmdk-backdrop').classList.add('flex');
+            document.getElementById('cmdk-input').value = '';
+            renderCmdk();
+            setTimeout(() => document.getElementById('cmdk-input').focus(), 30);
+        }
+        function closeCmdk() {
+            document.getElementById('cmdk-backdrop').classList.add('hidden');
+            document.getElementById('cmdk-backdrop').classList.remove('flex');
+        }
+        function renderCmdk() {
+            const q = document.getElementById('cmdk-input').value.toLowerCase();
+            const list = document.getElementById('cmdk-list');
+            const results = q ? testDatabase.filter(t => t.name.toLowerCase().includes(q) || (t.syn && t.syn.toLowerCase().includes(q))).slice(0, 30) : testDatabase.slice(0, 8);
+            list.innerHTML = results.map(t => `
+                <div class="cmdk-item flex items-center justify-between px-4 py-2.5 cursor-pointer transition-colors" onclick="cmdkSelect(${t.id})">
+                    <div><div class="text-sm font-semibold text-slate-800">${t.name}</div><div class="text-[11px] text-slate-400">${t.dept} ${t.syn ? '· ' + t.syn : ''}</div></div>
+                    <i class="fa-solid fa-arrow-right text-slate-300 text-xs"></i>
+                </div>`).join('') || `<div class="px-4 py-6 text-center text-sm text-slate-400">No matches.</div>`;
+        }
+        function cmdkSelect(id) {
+            closeCmdk();
+            switchModule('module-guide');
+            loadTestDetails(id);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                e.preventDefault(); openCmdk();
+            } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault(); openCmdk();
+            } else if (e.key === 'Escape') {
+                closeCmdk(); closeAdminModal(); closeAddTestModal();
+            }
+        });
+
+        // ==========================================
+        // NAVIGATION
+        // ==========================================
+        function switchModule(moduleId) {
+            document.querySelectorAll('.module-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const target = document.getElementById(moduleId);
+            target.classList.remove('hidden');
+            target.classList.add('animate-fade-in');
+
+            const map = { 'module-guide': 'nav-guide', 'module-order': 'nav-order', 'module-tray': 'nav-tray', 'module-btct': 'nav-btct', 'module-print': 'nav-print' };
+            if (map[moduleId]) document.getElementById(map[moduleId]).classList.add('active');
+
+            if (moduleId === 'module-print') {
+                if (!currentTemplate) loadTemplate('mt');
+                document.getElementById('scanner-input').focus();
+            } else if (moduleId === 'module-order') {
+                renderOrderFlow();
+            } else if (moduleId === 'module-tray') {
+                renderTray();
+            }
+        }
+
+        // ==========================================
+        // MODULE 1: GUIDE LOGIC
+        // ==========================================
+        function setFilter(dept) {
+            currentFilter = dept;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-3 py-1 text-xs font-semibold rounded-full shrink-0 transition-colors " +
+                               (btn.innerText.trim() === dept ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200");
+            });
+            renderTests();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('search-input-guide').addEventListener('input', renderTests);
+        });
+
+        function renderTests() {
+            const query = document.getElementById('search-input-guide').value.toLowerCase();
+            const listEl = document.getElementById('test-list');
+            listEl.innerHTML = '';
+
+            const filtered = testDatabase.filter(t => {
+                const matchSearch = t.name.toLowerCase().includes(query) || (t.syn && t.syn.toLowerCase().includes(query));
+                const matchFilter = currentFilter === 'All' || t.dept === currentFilter || (currentFilter === '★ Favorites' && favorites.has(t.id));
+                return matchSearch && matchFilter;
+            }).sort((a, b) => a.name.localeCompare(b.name));
+
+            document.getElementById('test-count-badge').innerText = `${filtered.length} test${filtered.length === 1 ? '' : 's'}`;
+
+            filtered.forEach(test => {
+                const isActive = currentTestId === test.id;
+                const isFav = favorites.has(test.id);
+                const li = document.createElement('li');
+                li.className = `p-4 cursor-pointer transition-all border-l-4 ${isActive ? 'bg-blue-50/50 border-blue-500' : 'bg-white border-transparent hover:bg-slate-50'}`;
+
+                let badgesHTML = test.tags.map(tag => {
+                    const color = tag === 'Fasting' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700';
+                    return `<span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${color}">${tag}</span>`;
+                }).join('');
+
+                const tIds = Array.isArray(test.tubeId) ? test.tubeId : [test.tubeId];
+                let tubeDotsHTML = '';
+                tIds.forEach(id => {
+                    const tube = tubes[id];
+                    if (tube) tubeDotsHTML += `<div class="w-3.5 h-3.5 rounded-full shadow-sm border border-black/10 -ml-1.5 first:ml-0" style="background-color: ${tube.color}" title="${tube.name}"></div>`;
+                });
+
+                li.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                ${isFav ? '<i class="fa-solid fa-star text-amber-400 text-xs"></i>' : ''}
+                                <span class="font-semibold text-sm truncate ${isActive ? 'text-blue-700' : 'text-slate-800'}">${test.name}</span>
+                                ${badgesHTML}
+                            </div>
+                            <div class="text-[11px] text-slate-400 font-medium">${test.syn || 'Multiple Tubes'}</div>
+                        </div>
+                        <div class="flex items-center shrink-0 ml-2">${tubeDotsHTML}</div>
+                    </div>
+                `;
+                li.onclick = () => loadTestDetails(test.id);
+                listEl.appendChild(li);
+            });
+        }
+
+        function loadTestDetails(id) {
+            currentTestId = id;
+            const test = testDatabase.find(t => t.id === id);
+            if (!test) return;
+
+            document.getElementById('det-title').innerText = test.name;
+            document.getElementById('det-dept').innerText = test.dept;
+            document.getElementById('det-syn').innerText = test.syn ? `aka: ${test.syn}` : "No synonyms";
+
+            document.getElementById('det-badges').innerHTML = test.tags.map(tag => {
+                const color = tag === 'Fasting' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700';
+                return `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded ${color}">${tag}</span>`;
+            }).join('');
+
+            document.getElementById('det-prep').innerText = test.patientPrep;
+            document.getElementById('det-inv').innerText = test.inversions;
+            document.getElementById('det-vol').innerText = test.minVolume;
+            document.getElementById('det-hand').innerText = test.handling;
+
+            const favBtn = document.getElementById('fav-btn');
+            favBtn.classList.toggle('text-amber-400', favorites.has(id));
+            favBtn.classList.toggle('text-slate-300', !favorites.has(id));
+
+            document.getElementById('admin-del-btn').classList.toggle('hidden', !isAdmin);
+
+            const tIds = Array.isArray(test.tubeId) ? test.tubeId : [test.tubeId];
+            const tubeContainer = document.getElementById('tube-visual-container');
+            tubeContainer.innerHTML = '';
+
+            tIds.forEach(tId => {
+                const tube = tubes[tId];
+                if (!tube) return;
+                tubeContainer.innerHTML += `
+                    <div class="flex flex-col items-center w-1/2 min-w-[120px] mb-2 animate-fade-in">
+                        <div class="tube-3d-wrapper" style="transform: scale(0.9); margin: 10px auto;">
+                            <div class="tube-cap-3d" style="background-color: ${tube.color}"></div>
+                            <div class="tube-glass"></div>
+                            <div class="tube-liquid" style="background-color: ${tube.liq}; animation: fillUp 0.8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;"></div>
+                            <div class="tube-label-3d"></div>
+                        </div>
+                        <div class="text-center w-full">
+                            <h3 class="text-sm font-bold text-slate-800 leading-tight">${tube.name}</h3>
+                            <div class="inline-block mt-1 bg-slate-100 border border-slate-200 rounded-md px-2 py-1 w-full max-w-[110px]">
+                                <span class="block text-[9px] font-bold uppercase text-slate-400 tracking-widest">Additive</span>
+                                <span class="block text-[11px] font-semibold text-slate-700 truncate" title="${tube.additive}">${tube.additive}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('active-state').classList.remove('hidden');
+
+            renderTests();
+        }
+
+        function toggleFavoriteCurrent() {
+            if (currentTestId === null) return;
+            if (favorites.has(currentTestId)) { favorites.delete(currentTestId); showToast('Removed from favorites', 'info', 'fa-star'); }
+            else { favorites.add(currentTestId); showToast('Added to favorites', 'success', 'fa-star'); }
+            LS.set('lc_favorites', [...favorites]);
+            loadTestDetails(currentTestId);
+        }
+
+        function addCurrentToTray() {
+            if (currentTestId === null) return;
+            if (tray.includes(currentTestId)) { showToast('Already in tray', 'info', 'fa-clipboard-list'); return; }
+            tray.push(currentTestId);
+            LS.set('lc_tray', tray);
+            updateTrayBadge();
+            showToast('Added to Collection Tray', 'success', 'fa-clipboard-check');
+        }
+
+        // ==========================================
+        // MODULE 2: ORDER OF DRAW
+        // ==========================================
+        const orderSequence = [
+            { id: 'culture', reason: 'Drawn first while the needle site and bottle are sterile, preventing any contaminating skin flora from later tubes being carried into the culture broth.' },
+            { id: 'light_blue', reason: 'Citrate coagulation tubes are drawn early (or second) so that tissue factor contamination from a difficult stick does not affect PT/PTT results.' },
+            { id: 'red', reason: 'Plain / clot-activator tubes go next — the clot activator will not carry backward and interfere with the citrate ratio needed for coagulation testing.' },
+            { id: 'green', reason: 'Heparin tubes follow the serum tubes; heparin carryover into later tubes could otherwise inhibit clot activators or enzymatic assays.' },
+            { id: 'lavender', reason: 'EDTA strongly chelates calcium — drawing it after clotting/chemistry tubes avoids calcium binding that would distort those results if carried backward.' },
+            { id: 'gray', reason: 'Oxalate/fluoride is drawn last because fluoride inhibits enzymes and glycolysis — any carryover earlier would suppress downstream enzymatic chemistry tests.' }
+        ];
+
+        function renderOrderFlow() {
+            const wrap = document.getElementById('order-flow');
+            wrap.innerHTML = orderSequence.map((step, i) => {
+                const tube = tubes[step.id];
+                return `
+                <div class="flex flex-col items-center cursor-pointer group" onclick="showOrderDetail(${i})">
+                    <div class="w-8 h-8 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center text-xs font-bold text-slate-400 mb-2 group-hover:border-blue-400 group-hover:text-blue-500 transition-all">${i + 1}</div>
+                    <div class="mini-tube transition-transform group-hover:-translate-y-2">
+                        <div class="cap" style="background-color:${tube.color}"></div>
+                        <div class="body"><div class="fill" style="background-color:${tube.liq}"></div></div>
+                    </div>
+                    <div class="text-[11px] font-bold text-slate-600 mt-2 text-center max-w-[90px]">${tube.name}</div>
+                </div>`;
+            }).join('');
+            showOrderDetail(0);
+        }
+
+        function showOrderDetail(i) {
+            const step = orderSequence[i];
+            const tube = tubes[step.id];
+            document.getElementById('order-detail').innerHTML = `
+                <div class="flex items-start gap-6">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md" style="background-color:${tube.color}">${i + 1}</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-1">${tube.name}</h3>
+                        <p class="text-xs font-bold uppercase text-slate-400 mb-3">Additive: ${tube.additive}</p>
+                        <p class="text-slate-600 leading-relaxed">${step.reason}</p>
+                    </div>
+                </div>`;
+        }
+
+        // ==========================================
+        // MODULE 3: COLLECTION TRAY
+        // ==========================================
+        function updateTrayBadge() {
+            const badge = document.getElementById('tray-badge');
+            if (tray.length > 0) { badge.classList.remove('hidden'); badge.innerText = tray.length; }
+            else badge.classList.add('hidden');
+        }
+
+        function removeFromTray(id) {
+            tray = tray.filter(t => t !== id);
+            LS.set('lc_tray', tray);
+            updateTrayBadge();
+            renderTray();
+            showToast('Removed from tray', 'info', 'fa-xmark');
+        }
+
+        function clearTray() {
+            tray = [];
+            LS.set('lc_tray', tray);
+            updateTrayBadge();
+            renderTray();
+            showToast('Tray cleared', 'info', 'fa-broom');
+        }
+
+        function renderTray() {
+            const items = tray.map(id => testDatabase.find(t => t.id === id)).filter(Boolean);
+            document.getElementById('tray-empty').classList.toggle('hidden', items.length > 0);
+            document.getElementById('tray-content').classList.toggle('hidden', items.length === 0);
+            if (items.length === 0) return;
+
+            document.getElementById('tray-count').innerText = `(${items.length})`;
+            document.getElementById('tray-list').innerHTML = items.map(t => `
+                <li class="py-3 flex items-center justify-between">
+                    <div>
+                        <div class="font-semibold text-sm text-slate-800">${t.name}</div>
+                        <div class="text-[11px] text-slate-400">${t.dept}</div>
+                    </div>
+                    <button onclick="removeFromTray(${t.id})" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fa-solid fa-circle-xmark"></i></button>
+                </li>`).join('');
+
+            const tubeSet = new Set();
+            items.forEach(t => (Array.isArray(t.tubeId) ? t.tubeId : [t.tubeId]).forEach(id => tubeSet.add(id)));
+            document.getElementById('tray-tubes').innerHTML = [...tubeSet].map(id => {
+                const tube = tubes[id];
+                if (!tube) return '';
+                return `<div class="flex flex-col items-center">
+                    <div class="mini-tube"><div class="cap" style="background-color:${tube.color}"></div><div class="body"><div class="fill" style="background-color:${tube.liq}"></div></div></div>
+                    <span class="text-[10px] font-bold text-slate-500 mt-1 text-center max-w-[70px]">${tube.name}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function printTray() {
+            switchModule('module-print');
+            loadTemplate('tray');
+        }
+
+        // ==========================================
+        // TIMERS: BT/CT & TOURNIQUET
+        // ==========================================
+        const timers = { bt: { int: null, sec: 0 }, ct: { int: null, sec: 0 } };
+        let audioCtx = null;
+        function toggleBeep() {
+            soundOn = !soundOn;
+            document.getElementById('beep-btn').querySelector('span') || null;
+            document.getElementById('beep-icon').className = soundOn ? 'fa-solid fa-volume-high mr-1' : 'fa-solid fa-volume-xmark mr-1';
+            document.getElementById('beep-btn').innerHTML = `<i class="fa-solid ${soundOn ? 'fa-volume-high' : 'fa-volume-xmark'} mr-1" id="beep-icon"></i> Sound: ${soundOn ? 'On' : 'Off'}`;
+        }
+        function playBeep() {
+            if (!soundOn) return;
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type = 'sine'; o.frequency.value = 880;
+                g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(); o.stop(audioCtx.currentTime + 0.3);
+            } catch (e) {}
+        }
+
+        function toggleBtCt(type) {
+            const btn = document.getElementById(`${type}-btn`);
+            const display = document.getElementById(`${type}-time`);
+            const ring = document.getElementById(`${type}-display-ring`);
+            const t = timers[type];
+            if (t.int) {
+                clearInterval(t.int); t.int = null;
+                btn.innerText = "RESUME";
+                btn.classList.replace('bg-red-500', 'bg-blue-600');
+                ring.classList.remove('timer-alert');
+            } else {
+                btn.innerText = "PAUSE";
+                btn.classList.replace('bg-blue-600', 'bg-red-500');
+                t.int = setInterval(() => {
+                    t.sec++;
+                    const m = Math.floor(t.sec / 60).toString().padStart(2, '0');
+                    const s = (t.sec % 60).toString().padStart(2, '0');
+                    display.innerText = `${m}:${s}`;
+                    if (t.sec > 0 && t.sec % 30 === 0) {
+                        ring.classList.add('timer-alert');
+                        playBeep();
+                        setTimeout(() => ring.classList.remove('timer-alert'), 3000);
+                    }
+                }, 1000);
+            }
+        }
+        function resetBtCt(type) {
+            clearInterval(timers[type].int); timers[type].int = null; timers[type].sec = 0;
+            const btn = document.getElementById(`${type}-btn`);
+            btn.innerText = "START";
+            btn.classList.remove('bg-red-500'); btn.classList.add('bg-blue-600');
+            document.getElementById(`${type}-time`).innerText = "00:00";
+            document.getElementById(`${type}-display-ring`).classList.remove('timer-alert');
+        }
+        function recordBtCt(type) {
+            const sec = timers[type].sec;
+            if (sec === 0) { showToast('Timer is at 00:00 — nothing to record', 'error', 'fa-triangle-exclamation'); return; }
+            const m = Math.floor(sec / 60), s = sec % 60;
+            btctHistory.unshift({ method: type.toUpperCase(), duration: `${m} min ${s.toString().padStart(2, '0')} sec`, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+            btctHistory = btctHistory.slice(0, 20);
+            LS.set('lc_btct_history', btctHistory);
+            renderBtctHistory();
+            showToast(`${type.toUpperCase()} result recorded`, 'success', 'fa-flag-checkered');
+            resetBtCt(type);
+        }
+        function clearBtctHistory() {
+            btctHistory = []; LS.set('lc_btct_history', btctHistory); renderBtctHistory();
+        }
+        function renderBtctHistory() {
+            const empty = document.getElementById('btct-history-empty');
+            const table = document.getElementById('btct-history-table');
+            if (btctHistory.length === 0) { empty.classList.remove('hidden'); table.classList.add('hidden'); return; }
+            empty.classList.add('hidden'); table.classList.remove('hidden');
+            document.getElementById('btct-history-body').innerHTML = btctHistory.map(h => `
+                <tr><td class="py-2 font-bold ${h.method === 'BT' ? 'text-red-500' : 'text-amber-500'}">${h.method}</td><td class="py-2 font-mono">${h.duration}</td><td class="py-2 text-slate-400">${h.time}</td></tr>
+            `).join('');
+        }
+
+        let tInterval = null, tSecs = 0;
+        function toggleTourniquet() {
+            const btn = document.getElementById('t-btn');
+            const display = document.getElementById('t-time');
+            const box = document.getElementById('t-timer-box');
+            if (tInterval) {
+                clearInterval(tInterval); tInterval = null; tSecs = 0;
+                btn.innerText = "START"; display.innerText = "00:00";
+                box.className = "flex items-center gap-3 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200";
+                btn.className = "text-[11px] font-bold bg-white border border-slate-200 px-2 py-0.5 rounded text-blue-600 hover:bg-blue-50 shadow-sm transition-all";
+            } else {
+                btn.innerText = "STOP";
+                btn.className = "text-[11px] font-bold bg-white border border-red-200 px-2 py-0.5 rounded text-red-600 hover:bg-red-50 shadow-sm transition-all";
+                tInterval = setInterval(() => {
+                    tSecs++;
+                    display.innerText = `${Math.floor(tSecs / 60).toString().padStart(2, '0')}:${(tSecs % 60).toString().padStart(2, '0')}`;
+                    if (tSecs === 45) box.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-700');
+                    if (tSecs >= 60) {
+                        box.classList.remove('bg-amber-50', 'border-amber-300', 'text-amber-700');
+                        box.classList.add('bg-red-50', 'border-red-300', 'text-red-700', 'animate-pulse');
+                    }
+                }, 1000);
+            }
+        }
+
+        // ==========================================
+        // MODULE 5: PRINT LAB & THERMAL TEMPLATES
+        // ==========================================
+        let recentPrints = [];
+        function formatDateTime(dateObj) {
+            const options = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+            return dateObj.toLocaleDateString('en-GB', options);
+        }
+
+        function loadTemplate(tempType) {
+            currentTemplate = tempType;
+            const editor = document.getElementById('editor-dynamic-fields');
+            const title = document.getElementById('print-editor-title');
+
+            editor.innerHTML = '';
+            document.getElementById('scanner-input').value = '';
+
+            if (tempType === 'mt') {
+                title.innerText = 'Mantoux (MT) Test Config';
+                const reportDate = new Date(Date.now() + (3 * 24 * 60 * 60 * 1000));
+                const formattedDate = formatDateTime(reportDate);
+                editor.innerHTML = `
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Patient Name / ID</label>
+                    <input type="text" id="inp-name" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm" placeholder="e.g. John Doe" oninput="renderPreview()"></div>
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Return Date/Time (Auto-calc 72hr)</label>
+                    <input type="text" id="inp-date" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm bg-slate-100 font-bold" value="${formattedDate}" readonly></div>`;
+            }
+            else if (tempType === 'ogtt') {
+                title.innerText = 'OGTT Timing Config';
+                const time1 = new Date(Date.now() + (60 * 60 * 1000));
+                const time2 = new Date(Date.now() + (2 * 60 * 60 * 1000));
+                editor.innerHTML = `
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Glucose Load</label>
+                    <select id="inp-glucose" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm" onchange="renderPreview()">
+                        <option value="75g">75g Standard</option><option value="50g">50g Gestational</option><option value="100g">100g Gestational</option>
+                    </select></div>
+                    <div class="flex gap-2">
+                        <div class="flex-1 mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">1st Draw Time (+1hr)</label>
+                        <input type="text" id="inp-t1" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm bg-slate-100" value="${time1.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}" readonly></div>
+                        <div class="flex-1 mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">2nd Draw Time (+2hr)</label>
+                        <input type="text" id="inp-t2" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm bg-slate-100" value="${time2.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}" readonly></div>
+                    </div>`;
+            }
+            else if (tempType === 'btct-result') {
+                title.innerText = 'BT/CT Final Result';
+                editor.innerHTML = `
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Patient ID / Name</label>
+                    <input type="text" id="inp-btct-name" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm" placeholder="e.g. 10245" oninput="renderPreview()"></div>
+                    <div class="flex gap-2">
+                        <div class="flex-1 mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Bleeding Time (BT)</label>
+                        <input type="text" id="inp-bt-val" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-bold text-red-600" placeholder="e.g. 3 min 15 sec" value="0 min 00 sec" oninput="renderPreview()"></div>
+                        <div class="flex-1 mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Clotting Time (CT)</label>
+                        <input type="text" id="inp-ct-val" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm font-bold text-amber-600" placeholder="e.g. 8 min 30 sec" value="0 min 00 sec" oninput="renderPreview()"></div>
+                    </div>`;
+            }
+            else if (tempType === 'tray') {
+                title.innerText = 'Tray Consolidated Label';
+                const items = tray.map(id => testDatabase.find(t => t.id === id)).filter(Boolean);
+                editor.innerHTML = `
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Patient ID / Name</label>
+                    <input type="text" id="inp-tray-name" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm" placeholder="e.g. 10245" oninput="renderPreview()"></div>
+                    <div class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded p-3">
+                        <b>${items.length}</b> test(s) in tray: ${items.map(i => i.name).join(', ') || 'none'}
+                    </div>`;
+            }
+            else if (tempType === 'custom') {
+                title.innerText = 'Custom Text Barcode';
+                editor.innerHTML = `
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Header Title</label>
+                    <input type="text" id="inp-title" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm" value="LABORATORY SAMPLE" oninput="renderPreview()"></div>
+                    <div class="mb-3"><label class="block text-xs font-bold text-slate-500 uppercase mb-1">Custom Instructions</label>
+                    <textarea id="inp-desc" class="w-full border border-slate-300 rounded px-3 py-1.5 text-sm" rows="3" oninput="renderPreview()">Please handle with care.</textarea></div>`;
+            }
+
+            document.getElementById('scanner-input').focus();
+            renderPreview();
+        }
+
+        function updatePreviewBarcode() { renderPreview(); }
+
+        function renderPreview() {
+            const preview = document.getElementById('sticker-preview');
+            const barcodeVal = document.getElementById('scanner-input').value || '12345678';
+            let html = '';
+
+            const baseCSS = `<style>
+    .sticker-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; background: white; color: black; line-height: 1.2; box-sizing: border-box; padding: 12px; }
+    .stk-head { font-weight: bold; text-align: center; border-bottom: 1px solid black; padding-bottom: 2px; margin-bottom: 4px; }
+    .stk-body { flex: 1; display: flex; flex-direction: column; }
+    .stk-barcode { text-align: center; margin-top: auto; }
+    .svg-barcode { max-width: 100%; height: 35px; }
+</style>`;
+
+            if (currentTemplate === 'mt') {
+                const name = document.getElementById('inp-name') ? document.getElementById('inp-name').value : '';
+                const date = document.getElementById('inp-date') ? document.getElementById('inp-date').value : '';
+                html = `${baseCSS}<div class="sticker-wrapper" style="padding: 2px;">
+                    <div class="stk-body" style="justify-content: space-between; flex-grow: 1; padding-top: 2px;">
+                        ${name ? `<div style="font-weight:bold; font-size:14px; text-align: center; margin-bottom: 2px;">ID: ${name}</div>` : ''}
+                        <div class="bengali-text" style="font-size: 15px; font-weight:700; text-align: center; border: 2px solid black; padding: 4px; border-radius: 6px; margin-bottom: 4px;">
+                            আগামী <span style="font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 800;">${date}</span> এর সময় এসে হাত দেখাবেন।
+                        </div>
+                        <div class="bengali-text" style="font-size: 11px; line-height: 1.3; text-align: center; padding: 0 2px;">
+                            <b style="font-size: 15px;">আগামী ৩ দিন এলার্জি জাতীয় খাবার খাবেন সৈ.</b><br>
+                            যেমন - দুধ, চিংড়ি, ডিম, বোয়াল মাছ, গরুর মাংস, বেগুন, ডাল, পুঁই শাক ইত্যাদি।
+                        </div>
+                        <div class="bengali-text" style="font-size: 12px; font-weight: 800; text-align: center; border-top: 2px dashed black; padding-top: 4px; margin-top: auto; padding-bottom: 2px;">
+                            হাত চুলকাবেন না, লোশন, পানি ও সাবান এড়িয়ে চলুন।
+                        </div>
+                    </div></div>`;
+            }
+            else if (currentTemplate === 'ogtt') {
+                const gload = document.getElementById('inp-glucose') ? document.getElementById('inp-glucose').value : '';
+                const t1 = document.getElementById('inp-t1') ? document.getElementById('inp-t1').value : '';
+                const t2 = document.getElementById('inp-t2') ? document.getElementById('inp-t2').value : '';
+                html = `${baseCSS}<div class="sticker-wrapper" style="padding: 2px;">
+                    <div class="stk-head" style="font-size: 15px; background: black; color: white; padding: 4px 0; letter-spacing: 0.5px;">OGTT REMINDER (${gload})</div>
+                    <div class="stk-body" style="justify-content: space-between; flex-grow: 1; margin-top: 2px;">
+                        <table style="width: 100%; text-align:left; font-size: 14px; margin-bottom: 2px;">
+                            <tr><td style="padding-bottom: 6px; padding-left: 8px;"><b>Fasting:</b></td><td style="padding-bottom: 6px; font-weight: bold;">Collected</td></tr>
+                            <tr><td style="padding-bottom: 6px; padding-left: 8px;"><b>1 Hour:</b></td><td style="font-weight:bold; font-size:18px; padding-bottom: 6px;">${t1}</td></tr>
+                            <tr><td style="padding-left: 8px;"><b>2 Hour:</b></td><td style="font-weight:bold; font-size:18px;">${t2}</td></tr>
+                        </table>
+                        <div class="bengali-text" style="font-size: 11px; font-weight: 700; text-align: center; border-top: 2px dashed black; padding-top: 6px; margin-top: auto; padding-bottom: 2px;">রক্ত দেওয়া শেষ না হওয়া পর্যন্ত কিছু খাবেন না, পরিশ্রম হয় এমন কাজ করবেন না
+                        </div>
+                    </div></div>`;
+            }
+            else if (currentTemplate === 'btct-result') {
+                const name = document.getElementById('inp-btct-name') ? document.getElementById('inp-btct-name').value : '';
+                const btVal = document.getElementById('inp-bt-val') ? document.getElementById('inp-bt-val').value : '';
+                const ctVal = document.getElementById('inp-ct-val') ? document.getElementById('inp-ct-val').value : '';
+                html = `${baseCSS}<div class="sticker-wrapper" style="padding: 2px;">
+                    <div class="stk-head" style="font-size: 15px; background: black; color: white; padding: 4px 0; letter-spacing: 0.5px;">BT / CT RESULT</div>
+                    <div class="stk-body" style="justify-content: space-between; flex-grow: 1; margin-top: 4px;">
+                        ${name ? `<div style="font-weight:bold; font-size:13px; text-align: center; border-bottom: 1px dotted black; padding-bottom: 4px; margin-bottom: 4px;">ID: ${name}</div>` : ''}
+                        <table style="width: 100%; text-align:left; font-size: 14px; margin-top: auto; margin-bottom: auto;">
+                            <tr><td style="padding-bottom: 8px; padding-left: 8px;"><b>BT:</b></td><td style="font-weight:bold; font-size:18px; padding-bottom: 8px;">${btVal}</td></tr>
+                            <tr><td style="padding-left: 8px;"><b>CT:</b></td><td style="font-weight:bold; font-size:18px;">${ctVal}</td></tr>
+                        </table>
+                    </div>
+                    <div style="font-size: 10px; text-align: center; border-top: 1px dashed black; padding-top: 4px; margin-top: auto; padding-bottom: 2px; color: #333;">
+                        Method: Duke/Ivy (BT) & Capillary (CT)
+                    </div></div>`;
+            }
+            else if (currentTemplate === 'tray') {
+                const name = document.getElementById('inp-tray-name') ? document.getElementById('inp-tray-name').value : '';
+                const items = tray.map(id => testDatabase.find(t => t.id === id)).filter(Boolean);
+                html = `${baseCSS}<div class="sticker-wrapper" style="padding: 2px;">
+                    <div class="stk-head" style="font-size: 14px; background: black; color: white; padding: 3px 0;">COLLECTION TRAY</div>
+                    <div class="stk-body" style="padding: 4px;">
+                        ${name ? `<div style="font-weight:bold; font-size:13px; text-align:center; margin-bottom:4px;">ID: ${name}</div>` : ''}
+                        <div style="font-size: 10px; line-height:1.5;">${items.map(i => `• ${i.name}`).join('<br>') || 'No tests added'}</div>
+                    </div>
+                    <div class="stk-barcode"><svg id="sticker-bc-svg" class="svg-barcode"></svg></div>
+                </div>`;
+            }
+            else if (currentTemplate === 'custom') {
+                const title = document.getElementById('inp-title') ? document.getElementById('inp-title').value : '';
+                const desc = document.getElementById('inp-desc') ? document.getElementById('inp-desc').value : '';
+                html = `${baseCSS}<div class="sticker-wrapper" style="padding: 2px;">
+                    <div class="stk-head" style="font-size: 15px; background: black; color: white; padding: 3px 0;">${title.toUpperCase()}</div>
+                    <div class="stk-body" style="font-size: 14px; padding: 6px; text-align: center; justify-content: center; font-weight: bold;">${desc}</div>
+                    <div class="stk-barcode"><svg id="sticker-bc-svg" class="svg-barcode"></svg></div>
+                </div>`;
+            }
+
+            preview.innerHTML = html;
+
+            try {
+                if (document.getElementById('sticker-bc-svg')) {
+                    JsBarcode("#sticker-bc-svg", barcodeVal, { format: "CODE128", width: 2, height: 35, displayValue: true, fontSize: 14, fontOptions: "bold", margin: 0 });
+                }
+            } catch (e) { console.log("Waiting for library or invalid barcode"); }
+        }
+
+        function executePrint() {
+            document.getElementById('print-sticker-content').innerHTML = document.getElementById('sticker-preview').innerHTML;
+            window.print();
+            recentPrints.unshift(`${currentTemplate.toUpperCase()} · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+            recentPrints = recentPrints.slice(0, 6);
+            document.getElementById('recent-prints').innerHTML = recentPrints.map(p => `<div class="flex items-center gap-1"><i class="fa-solid fa-check text-emerald-500"></i>${p}</div>`).join('') || 'None yet.';
+            document.getElementById('scanner-input').value = '';
+            document.getElementById('scanner-input').focus();
+            renderPreview();
+            showToast('Sent to printer', 'success', 'fa-print');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('module-print').classList.contains('hidden')) {
+                if (e.key.length === 1 && !e.ctrlKey && !e.altKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    document.getElementById('scanner-input').focus();
+                }
+            }
+        });
+
+        // ==========================================
+        // ADMIN AUTH, TOOLBAR & CRUD
+        // ==========================================
+        function toggleAdmin() {
+            if (isAdmin) {
+                isAdmin = false;
+                document.getElementById('admin-badge').classList.add('hidden');
+                document.getElementById('nav-admin').classList.remove('text-amber-500');
+                document.getElementById('admin-icon').classList.replace('fa-lock-open', 'fa-lock');
+                document.getElementById('admin-toolbar').classList.add('hidden');
+                document.getElementById('admin-toolbar').classList.remove('flex');
+                document.getElementById('admin-del-btn').classList.add('hidden');
+            } else {
+                const modal = document.getElementById('login-modal');
+                const box = document.getElementById('login-box');
+                modal.classList.remove('hidden'); modal.classList.add('flex');
+                setTimeout(() => { box.classList.remove('scale-95', 'opacity-0'); box.classList.add('scale-100', 'opacity-100'); }, 10);
+                document.getElementById('admin-password').focus();
+            }
+        }
+        function closeAdminModal() {
+            const box = document.getElementById('login-box');
+            box.classList.remove('scale-100', 'opacity-100'); box.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => document.getElementById('login-modal').classList.replace('flex', 'hidden'), 200);
+            document.getElementById('admin-password').value = '';
+        }
+        function authenticateAdmin() {
+            if (document.getElementById('admin-password').value === 'admin') {
+                isAdmin = true;
+                document.getElementById('admin-badge').classList.remove('hidden');
+                document.getElementById('nav-admin').classList.add('text-amber-500');
+                document.getElementById('admin-icon').classList.replace('fa-lock', 'fa-lock-open');
+                document.getElementById('admin-toolbar').classList.remove('hidden');
+                document.getElementById('admin-toolbar').classList.add('flex');
+                if (currentTestId !== null) document.getElementById('admin-del-btn').classList.remove('hidden');
+                closeAdminModal();
+                showToast('Admin mode unlocked', 'success', 'fa-unlock');
+            } else {
+                showToast('Incorrect password (hint: admin)', 'error', 'fa-triangle-exclamation');
+            }
+        }
+
+        function adminDeleteCurrent() {
+            if (!isAdmin || currentTestId === null) return;
+            if (!confirm('Delete this test permanently from the directory?')) return;
+            deletedIds.add(currentTestId);
+            LS.set('lc_deleted_ids', [...deletedIds]);
+            const idx = testDatabase.findIndex(t => t.id === currentTestId);
+            if (idx > -1) testDatabase.splice(idx, 1);
+            document.getElementById('empty-state').classList.remove('hidden');
+            document.getElementById('active-state').classList.add('hidden');
+            currentTestId = null;
+            renderTests();
+            showToast('Test deleted', 'info', 'fa-trash');
+        }
+
+        function openAddTestModal() {
+            const sel = document.getElementById('new-tube');
+            sel.innerHTML = Object.keys(tubes).map(k => `<option value="${k}">${tubes[k].name}</option>`).join('');
+            document.getElementById('add-test-modal').classList.remove('hidden');
+            document.getElementById('add-test-modal').classList.add('flex');
+        }
+        function closeAddTestModal() {
+            document.getElementById('add-test-modal').classList.add('hidden');
+            document.getElementById('add-test-modal').classList.remove('flex');
+        }
+        function saveNewTest() {
+            const name = document.getElementById('new-name').value.trim();
+            if (!name) { showToast('Test name is required', 'error', 'fa-triangle-exclamation'); return; }
+            const newId = Math.max(0, ...testDatabase.map(t => t.id)) + 1;
+            const test = {
+                id: newId, name,
+                syn: document.getElementById('new-syn').value.trim(),
+                dept: document.getElementById('new-dept').value.trim() || 'Chemistry',
+                tubeId: document.getElementById('new-tube').value,
+                patientPrep: document.getElementById('new-prep').value.trim() || 'None required.',
+                inversions: document.getElementById('new-inv').value.trim() || '5 times',
+                minVolume: document.getElementById('new-vol').value.trim() || '1.0 mL',
+                handling: document.getElementById('new-hand').value.trim() || 'Standard handling',
+                tags: []
+            };
+            testDatabase.push(test);
+            customTests.push(test);
+            LS.set('lc_custom_tests', customTests);
+            closeAddTestModal();
+            renderTests();
+            showToast(`"${name}" added to directory`, 'success', 'fa-circle-check');
+            ['new-name','new-syn','new-dept','new-prep','new-inv','new-vol','new-hand'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify({ testDatabase, favorites: [...favorites], tray, btctHistory }, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'labcollect-export.json'; a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported', 'success', 'fa-download');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.editable-field').forEach(field => {
+                field.addEventListener('click', function () {
+                    if (!isAdmin || this.classList.contains('editing')) return;
+                    const orig = this.innerText;
+                    const key = this.getAttribute('data-field');
+                    this.classList.add('editing');
+
+                    if (key === 'patientPrep') this.innerHTML = `<textarea class="w-full bg-transparent outline-none resize-none text-slate-800" rows="3">${orig}</textarea>`;
+                    else this.innerHTML = `<input type="text" class="w-full bg-transparent outline-none text-slate-800 font-bold" value="${orig}">`;
+
+                    const input = this.querySelector('input, textarea');
+                    input.focus();
+
+                    const save = () => {
+                        const val = input.value;
+                        this.innerHTML = val;
+                        this.classList.remove('editing');
+                        const idx = testDatabase.findIndex(t => t.id === currentTestId);
+                        if (idx > -1) {
+                            testDatabase[idx][key] = val;
+                            editOverrides[currentTestId] = editOverrides[currentTestId] || {};
+                            editOverrides[currentTestId][key] = val;
+                            LS.set('lc_edit_overrides', editOverrides);
+                            showToast('Change saved', 'success', 'fa-floppy-disk');
+                        }
+                    };
+                    input.addEventListener('blur', save);
+                    input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); save(); } });
+                });
+            });
+        });
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        renderTests();
+        renderBtctHistory();
+        updateTrayBadge();
+        tickClock();
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash');
+                splash.style.opacity = '0';
+                splash.style.transition = 'opacity .4s ease';
+                setTimeout(() => splash.remove(), 400);
+            }, 350);
+        });
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Offline Service Worker Registered!', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker Registration Failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
