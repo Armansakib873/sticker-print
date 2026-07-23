@@ -2,8 +2,7 @@ const CACHE_NAME = 'labcollect-pro-v1.2';
 
 // Files to cache immediately on install
 const INITIAL_CACHED_RESOURCES = [
-    './',
-    './index.html'
+    './'
 ];
 
 // Install Event: Cache the main shell
