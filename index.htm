@@ -350,7 +350,7 @@
         <!-- ========================================== -->
         <!-- MODULE 1: COLLECTION GUIDE                  -->
         <!-- ========================================== -->
-        <div id="module-guide" class="flex-1 flex overflow-hidden w-full h-full module-view animate-fade-in">
+       <div id="module-guide" class="hidden flex-1 flex overflow-hidden w-full h-full module-view">
             <section class="w-[380px] bg-white border-r border-slate-200 flex flex-col h-full shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
                 <div class="p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
                     <div class="flex items-center justify-between mb-4">
@@ -1685,13 +1685,14 @@ const testDatabase = [
             });
         });
 
-        // ==========================================
+       // ==========================================
         // INITIALIZATION
         // ==========================================
         renderTests();
         renderBtctHistory();
         updateTrayBadge();
         tickClock();
+        switchModule('module-print'); // <--- THIS FORCES THE PRINT PAGE TO OPEN
 
         window.addEventListener('load', () => {
             setTimeout(() => {
