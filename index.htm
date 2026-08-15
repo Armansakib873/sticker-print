@@ -259,7 +259,7 @@
     }
 </style>
 </head>
-<body class="flex h-screen text-slate-800">
+<body class="flex flex-col-reverse md:flex-row h-screen text-slate-800">
 
     <!-- Loading Splash -->
     <div id="splash" class="fixed inset-0 z-[300] bg-slate-900 flex flex-col items-center justify-center gap-4">
@@ -283,45 +283,43 @@
         </div>
     </div>
 
-    <!-- Far Left App Navigation -->
-    <nav class="w-20 bg-white border-r border-slate-200 flex flex-col items-center py-6 shrink-0 z-50 shadow-sm">
-        <div class="w-10 h-10 rounded-xl brand-badge flex items-center justify-center text-white font-bold text-xl mb-8 shadow-md">
+    <!-- Far Left App Navigation (Bottom Bar on Mobile) -->
+    <nav class="w-full md:w-20 bg-white border-t md:border-t-0 md:border-r border-slate-200 flex flex-row md:flex-col items-center justify-around md:justify-start py-2 md:py-6 shrink-0 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-sm overflow-x-auto scrollbar-hide">
+        <div class="hidden md:flex w-10 h-10 rounded-xl brand-badge items-center justify-center text-white font-bold text-xl mb-8 shadow-md shrink-0">
             L<span class="text-blue-200">C</span>
         </div>
 
-    <div class="flex flex-col gap-1 w-full">
-            <!-- PRINT BUTTON MOVED TO TOP AND SET TO ACTIVE -->
-            <button onclick="switchModule('module-print')" id="nav-print" class="nav-item active w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
-                <i class="fa-solid fa-print text-xl"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Print</span>
+        <div class="flex flex-row md:flex-col gap-1 w-full justify-around md:justify-start px-2 md:px-0">
+            <button onclick="switchModule('module-print')" id="nav-print" class="nav-item active flex-1 md:w-full py-2 md:py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-t-4 md:border-t-0 md:border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-print text-lg md:text-xl"></i>
+                <span class="text-[9px] md:text-[10px] font-semibold uppercase tracking-wider">Print</span>
             </button>
-            <button onclick="switchModule('module-guide')" id="nav-guide" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
-                <i class="fa-solid fa-vials text-xl"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Guide</span>
+            <button onclick="switchModule('module-guide')" id="nav-guide" class="nav-item flex-1 md:w-full py-2 md:py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-t-4 md:border-t-0 md:border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-vials text-lg md:text-xl"></i>
+                <span class="text-[9px] md:text-[10px] font-semibold uppercase tracking-wider">Guide</span>
             </button>
-            <button onclick="switchModule('module-order')" id="nav-order" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
-                <i class="fa-solid fa-layer-group text-xl"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Order</span>
+            <button onclick="switchModule('module-order')" id="nav-order" class="nav-item flex-1 md:w-full py-2 md:py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-t-4 md:border-t-0 md:border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-layer-group text-lg md:text-xl"></i>
+                <span class="text-[9px] md:text-[10px] font-semibold uppercase tracking-wider">Order</span>
             </button>
-            <button onclick="switchModule('module-tray')" id="nav-tray" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all relative">
-                <i class="fa-solid fa-clipboard-list text-xl"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">Tray</span>
-                <span id="tray-badge" class="hidden absolute top-2 right-4 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pop">0</span>
+            <button onclick="switchModule('module-tray')" id="nav-tray" class="nav-item flex-1 md:w-full py-2 md:py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-t-4 md:border-t-0 md:border-l-4 border-transparent transition-all relative">
+                <i class="fa-solid fa-clipboard-list text-lg md:text-xl"></i>
+                <span class="text-[9px] md:text-[10px] font-semibold uppercase tracking-wider">Tray</span>
+                <span id="tray-badge" class="hidden absolute top-1 md:top-2 right-2 md:right-4 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center animate-pop">0</span>
             </button>
-            <button onclick="switchModule('module-btct')" id="nav-btct" class="nav-item w-full py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-l-4 border-transparent transition-all">
-                <i class="fa-solid fa-stopwatch text-xl"></i>
-                <span class="text-[10px] font-semibold uppercase tracking-wider">BT/CT</span>
+            <button onclick="switchModule('module-btct')" id="nav-btct" class="nav-item flex-1 md:w-full py-2 md:py-3.5 flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 border-t-4 md:border-t-0 md:border-l-4 border-transparent transition-all">
+                <i class="fa-solid fa-stopwatch text-lg md:text-xl"></i>
+                <span class="text-[9px] md:text-[10px] font-semibold uppercase tracking-wider">BT/CT</span>
             </button>
-            
         </div>
-        <div class="mt-auto w-full flex flex-col items-center gap-1">
-            <button onclick="toggleTheme()" class="w-full py-3 flex flex-col items-center gap-1 text-slate-300 hover:text-slate-600 transition-all">
+        <div class="mt-0 md:mt-auto flex flex-row md:flex-col items-center gap-1 px-2 md:px-0 shrink-0">
+            <button onclick="toggleTheme()" class="py-2 md:py-3 flex flex-col items-center gap-1 text-slate-300 hover:text-slate-600 transition-all px-3">
                 <i class="fa-solid fa-moon text-lg" id="theme-icon"></i>
-                <span class="text-[9px] font-semibold uppercase tracking-wider">Theme</span>
+                <span class="hidden md:block text-[9px] font-semibold uppercase tracking-wider">Theme</span>
             </button>
-            <button onclick="toggleAdmin()" id="nav-admin" class="w-full py-3 flex flex-col items-center gap-1 text-slate-300 hover:text-slate-600 transition-all">
+            <button onclick="toggleAdmin()" id="nav-admin" class="py-2 md:py-3 flex flex-col items-center gap-1 text-slate-300 hover:text-slate-600 transition-all px-3">
                 <i class="fa-solid fa-lock text-lg" id="admin-icon"></i>
-                <span class="text-[9px] font-semibold uppercase tracking-wider">Admin</span>
+                <span class="hidden md:block text-[9px] font-semibold uppercase tracking-wider">Admin</span>
             </button>
         </div>
     </nav>
@@ -357,8 +355,8 @@
         <!-- ========================================== -->
         <!-- MODULE 1: COLLECTION GUIDE                  -->
         <!-- ========================================== -->
-       <div id="module-guide" class="hidden flex-1 flex overflow-hidden w-full h-full module-view">
-            <section class="w-[380px] bg-white border-r border-slate-200 flex flex-col h-full shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
+       <div id="module-guide" class="hidden flex-1 flex overflow-hidden w-full h-full module-view relative">
+            <section id="guide-dir" class="w-full md:w-[380px] bg-white border-r border-slate-200 flex flex-col h-full shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10">
                 <div class="p-6 pb-4 border-b border-slate-100 bg-slate-50/50">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-bold text-slate-800">Test Directory</h2>
@@ -377,17 +375,18 @@
                 </div>
             </section>
 
-            <section class="flex-1 bg-slate-50/80 overflow-y-auto relative p-8">
-                <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+            <section id="guide-det" class="hidden md:flex flex-1 flex-col bg-slate-50/80 overflow-y-auto relative p-4 md:p-8 w-full">
+                <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-8 text-center">
                     <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 border border-slate-100 animate-float">
                         <i class="fa-solid fa-microscope text-4xl text-blue-200"></i>
                     </div>
                     <h3 class="text-lg font-semibold text-slate-600">No Test Selected</h3>
-                    <p class="text-sm mt-1">Select a test from the directory to view protocol, or press <kbd class="bg-slate-100 border border-slate-200 rounded px-1.5 text-xs">/</kbd> to search.</p>
+                    <p class="text-sm mt-1">Select a test from the directory to view protocol, or press <kbd class="hidden md:inline-block bg-slate-100 border border-slate-200 rounded px-1.5 text-xs">/</kbd><span class="md:hidden">search</span> to find one.</p>
                 </div>
 
-                <div id="active-state" class="hidden h-full max-w-4xl mx-auto animate-fade-in-scale">
-                    <div class="flex justify-between items-start mb-6 gap-4">
+                <div id="active-state" class="hidden h-full max-w-4xl mx-auto animate-fade-in-scale w-full pb-16 md:pb-0">
+                    <button onclick="backToGuideList()" class="md:hidden flex items-center gap-2 text-slate-500 mb-6 font-bold text-sm hover:text-blue-600 border border-slate-200 bg-white px-4 py-2 rounded-lg shadow-sm w-fit"><i class="fa-solid fa-arrow-left"></i> Back to Directory</button>
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 gap-4">
                         <div>
                             <div class="flex items-center gap-2 mb-2 flex-wrap">
                                 <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded editable-field" id="det-dept" data-field="dept">Dept</span>
@@ -397,14 +396,14 @@
                             <h1 id="det-title" class="text-3xl font-extrabold text-slate-900 tracking-tight editable-field" data-field="name">Test Name</h1>
                             <p id="det-syn" class="text-sm font-medium text-slate-500 mt-1 editable-field" data-field="syn">Synonyms</p>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            <button onclick="toggleFavoriteCurrent()" id="fav-btn" class="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm hover:border-amber-300 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all" title="Add to favorites">
+                        <div class="flex items-center gap-2 shrink-0 self-start md:self-auto">
+                            <button onclick="toggleFavoriteCurrent()" id="fav-btn" class="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm hover:border-amber-300 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all shrink-0" title="Add to favorites">
                                 <i class="fa-solid fa-star"></i>
                             </button>
-                            <button onclick="addCurrentToTray()" class="px-4 h-10 rounded-full bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2" title="Add to collection tray">
+                            <button onclick="addCurrentToTray()" class="px-4 h-10 rounded-full bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-2 shrink-0" title="Add to collection tray">
                                 <i class="fa-solid fa-clipboard-list"></i> Add to Tray
                             </button>
-                            <button onclick="adminDeleteCurrent()" id="admin-del-btn" class="hidden w-10 h-10 rounded-full bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 flex items-center justify-center transition-all" title="Delete test">
+                            <button onclick="adminDeleteCurrent()" id="admin-del-btn" class="hidden w-10 h-10 rounded-full bg-red-50 border border-red-200 text-red-500 hover:bg-red-100 flex items-center justify-center transition-all shrink-0" title="Delete test">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -443,7 +442,7 @@
         <!-- ========================================== -->
         <!-- MODULE 2: ORDER OF DRAW (NEW)               -->
         <!-- ========================================== -->
-        <div id="module-order" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-8">
+        <div id="module-order" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-4 md:p-8">
             <div class="max-w-6xl mx-auto">
                 <div class="mb-8">
                     <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">CLSI Order of Draw</h1>
@@ -462,9 +461,9 @@
         <!-- ========================================== -->
         <!-- MODULE 3: COLLECTION TRAY (NEW)             -->
         <!-- ========================================== -->
-        <div id="module-tray" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-8">
+        <div id="module-tray" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-4 md:p-8">
             <div class="max-w-5xl mx-auto">
-                <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
                     <div>
                         <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Collection Tray</h1>
                         <p class="text-slate-500">Build a patient's draw list — tubes auto-consolidate across shared additive types.</p>
@@ -499,7 +498,7 @@
         <!-- ========================================== -->
         <!-- MODULE 4: BT/CT TIMERS                     -->
         <!-- ========================================== -->
-        <div id="module-btct" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-8">
+        <div id="module-btct" class="hidden overflow-y-auto w-full h-full module-view bg-slate-50 p-4 md:p-8">
             <div class="max-w-5xl mx-auto">
                 <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
                     <div>
@@ -556,9 +555,9 @@
         <!-- ========================================== -->
         <!-- MODULE 5: PRINT LAB                        -->
         <!-- ========================================== -->
-        <div id="module-print" class="hidden overflow-hidden w-full h-full module-view bg-slate-50 flex">
-            <section class="w-[300px] bg-white border-r border-slate-200 flex flex-col h-full shrink-0 z-10">
-                <div class="p-5 border-b border-slate-100 bg-slate-800 text-white">
+        <div id="module-print" class="hidden overflow-hidden w-full h-full module-view bg-slate-50 flex flex-col md:flex-row">
+            <section class="w-full md:w-[300px] bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col shrink-0 z-10 max-h-[35vh] md:max-h-full md:h-full">
+                <div class="p-3 md:p-5 border-b border-slate-100 bg-slate-800 text-white">
                     <h2 class="text-lg font-bold"><i class="fa-solid fa-print mr-2 text-slate-400"></i> Sticker Templates</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 space-y-2">
@@ -589,14 +588,14 @@
                 </div>
             </section>
 
-            <section class="flex-1 flex flex-col p-8 overflow-y-auto">
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center gap-4 shadow-sm">
-                    <div class="bg-blue-100 p-3 rounded-full text-blue-600"><i class="fa-solid fa-barcode"></i></div>
-                    <div class="flex-1">
+            <section class="flex-1 flex flex-col p-4 md:p-8 overflow-y-auto">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+                    <div class="bg-blue-100 p-3 rounded-full text-blue-600 hidden md:block"><i class="fa-solid fa-barcode"></i></div>
+                    <div class="flex-1 text-center md:text-left">
                         <h3 class="text-sm font-bold text-blue-900 mb-1">Hardware Scanner Active</h3>
                         <p class="text-xs text-blue-700">Ensure cursor is in the box below, then scan barcode to auto-fill.</p>
                     </div>
-                    <input type="text" id="scanner-input" placeholder="Scan or type ID..." class="w-64 border-2 border-blue-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-600 font-mono text-sm shadow-inner" oninput="updatePreviewBarcode()">
+                    <input type="text" id="scanner-input" placeholder="Scan or type ID..." class="w-full md:w-64 border-2 border-blue-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-600 font-mono text-sm shadow-inner text-center md:text-left" oninput="updatePreviewBarcode()">
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
@@ -812,12 +811,23 @@
                 renderOrderFlow();
             } else if (moduleId === 'module-tray') {
                 renderTray();
+            } else if (moduleId === 'module-guide' && window.innerWidth < 768) {
+                if (!currentTestId) backToGuideList();
             }
         }
 
         // ==========================================
         // MODULE 1: GUIDE LOGIC
         // ==========================================
+        function backToGuideList() {
+            document.getElementById('guide-dir').classList.remove('hidden');
+            document.getElementById('guide-dir').classList.add('flex');
+            document.getElementById('guide-det').classList.add('hidden');
+            document.getElementById('guide-det').classList.remove('flex');
+            
+            // Note: We don't unset currentTestId so they can return, 
+            // but we ensure the directory view is visible.
+        }
         function setFilter(dept) {
             currentFilter = dept;
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -897,8 +907,21 @@
         }
 
         function loadTestDetails(id) {
-            currentTestId = id;
             const test = testDatabase.find(t => t.id === id);
+            if (!test) return;
+            currentTestId = test.id;
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('active-state').classList.remove('hidden');
+            
+            if (window.innerWidth < 768) {
+                document.getElementById('guide-dir').classList.add('hidden');
+                document.getElementById('guide-dir').classList.remove('flex');
+                document.getElementById('guide-det').classList.remove('hidden');
+                document.getElementById('guide-det').classList.add('flex');
+            }
+
+            renderTests(); // update active state in list;
             if (!test) return;
 
             document.getElementById('det-title').innerText = test.name;
