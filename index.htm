@@ -17,6 +17,13 @@
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
 
+    .font-bengali { 
+        font-family: 'Noto Sans Bengali', sans-serif; 
+        line-height: 1.6; 
+        font-size: 0.95em; 
+        color: #475569; 
+    }
+
     :root {
         --tube-culture: #f59e0b;
         --tube-light-blue: #7dd3fc;
@@ -362,15 +369,7 @@
                         <input type="text" id="search-input-guide" placeholder="Search test, synonym…" class="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow">
                     </div>
                     <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" id="filter-container">
-                        <button onclick="setFilter('All')" class="filter-btn active px-3 py-1 bg-slate-800 text-white text-xs font-semibold rounded-full shrink-0">All</button>
-                        <button onclick="setFilter('★ Favorites')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">★ Favorites</button>
-                        <button onclick="setFilter('Hematology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Hematology</button>
-                        <button onclick="setFilter('Chemistry')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Chemistry</button>
-                        <button onclick="setFilter('Coagulation')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Coagulation</button>
-                        <button onclick="setFilter('Microbiology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Microbiology</button>
-                        <button onclick="setFilter('Immunology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Immunology</button>
-                        <button onclick="setFilter('Toxicology')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Toxicology</button>
-                        <button onclick="setFilter('Blood Bank')" class="filter-btn px-3 py-1 bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold rounded-full shrink-0">Blood Bank</button>
+                        <!-- Filters dynamically generated -->
                     </div>
                 </div>
                 <div class="flex-1 overflow-y-auto bg-white">
@@ -391,12 +390,12 @@
                     <div class="flex justify-between items-start mb-6 gap-4">
                         <div>
                             <div class="flex items-center gap-2 mb-2 flex-wrap">
-                                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded" id="det-dept">Dept</span>
+                                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase px-2 py-0.5 rounded editable-field" id="det-dept" data-field="dept">Dept</span>
                                 <span id="det-badges" class="flex gap-2"></span>
                                 <span id="admin-badge" class="hidden bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-200 animate-pulse"><i class="fa-solid fa-pen mr-1"></i>EDIT MODE</span>
                             </div>
-                            <h1 id="det-title" class="text-3xl font-extrabold text-slate-900 tracking-tight">Test Name</h1>
-                            <p id="det-syn" class="text-sm font-medium text-slate-500 mt-1">Synonyms</p>
+                            <h1 id="det-title" class="text-3xl font-extrabold text-slate-900 tracking-tight editable-field" data-field="name">Test Name</h1>
+                            <p id="det-syn" class="text-sm font-medium text-slate-500 mt-1 editable-field" data-field="syn">Synonyms</p>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <button onclick="toggleFavoriteCurrent()" id="fav-btn" class="w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm hover:border-amber-300 flex items-center justify-center text-slate-300 hover:text-amber-400 transition-all" title="Add to favorites">
@@ -411,11 +410,15 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div id="tube-visual-container" class="glass-panel rounded-2xl p-4 flex flex-wrap justify-center gap-4 shadow-sm max-h-[400px] overflow-y-auto"></div>
+                        <div class="flex flex-col gap-2">
+                            <div id="tube-visual-container" class="glass-panel rounded-2xl p-4 flex flex-wrap justify-center gap-4 shadow-sm max-h-[400px] overflow-y-auto"></div>
+                            <button id="admin-edit-tube-btn" onclick="openEditTubeModal()" class="hidden w-full py-2 bg-amber-100 text-amber-700 font-bold rounded-xl border border-amber-300 hover:bg-amber-200 transition-colors text-sm"><i class="fa-solid fa-pen mr-2"></i>Change Tube(s)</button>
+                        </div>
                         <div class="lg:col-span-2 space-y-4">
                             <div class="glass-panel rounded-2xl p-6 shadow-sm card-hover">
                                 <h3 class="text-xs font-bold uppercase text-slate-400 mb-3"><i class="fa-solid fa-user-check text-blue-500 mr-2"></i> Patient Preparation</h3>
                                 <p id="det-prep" class="text-slate-700 font-medium editable-field" data-field="patientPrep">Prep data</p>
+                                <p id="det-prep-bn" class="font-bengali editable-field mt-3 pt-2 border-t border-slate-100/50 hidden" data-field="patientPrepBn">Prep data BN</p>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="glass-panel rounded-2xl p-5 shadow-sm card-hover">
@@ -640,7 +643,23 @@
         <i class="fa-solid fa-pen-ruler text-amber-400"></i>
         <span class="text-xs font-bold">Admin Mode — click any highlighted field to edit</span>
         <button onclick="openAddTestModal()" class="text-[11px] font-bold bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-plus mr-1"></i>New Test</button>
+        <button onclick="document.getElementById('import-file-input').click()" class="text-[11px] font-bold bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-upload mr-1"></i>Import</button>
         <button onclick="exportData()" class="text-[11px] font-bold bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-full transition-all"><i class="fa-solid fa-download mr-1"></i>Export</button>
+        <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="importData(event)">
+    </div>
+
+    <!-- Edit Tube Modal -->
+    <div id="edit-tube-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-[100]">
+        <div class="bg-white p-7 rounded-2xl shadow-2xl max-w-sm w-full border border-slate-200">
+            <h3 class="text-lg font-bold text-slate-900 mb-4"><i class="fa-solid fa-vial text-amber-500 mr-2"></i>Change Tube(s)</h3>
+            <div id="edit-tube-list" class="space-y-2 max-h-[50vh] overflow-y-auto mb-4 p-2 bg-slate-50 border border-slate-200 rounded-lg">
+                <!-- checkboxes generated in JS -->
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeEditTubeModal()" class="flex-1 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Cancel</button>
+                <button onclick="saveEditTube()" class="flex-1 py-2 text-sm font-bold bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors shadow-sm">Save Changes</button>
+            </div>
+        </div>
     </div>
 
     <!-- Add Test Modal -->
@@ -672,211 +691,8 @@
         // ==========================================
         // CONFIG & DATABASES
         // ==========================================
-      const tubes = {
-    'culture': { name: 'Blood Culture Bottle', additive: 'Broth Mixture', color: 'var(--tube-culture)', liq: '#b45309' },
-    'light_blue': { name: 'Light Blue Top', additive: 'Sodium Citrate (3.2%)', color: 'var(--tube-light-blue)', liq: '#dc2626' },
-    'red': { name: 'Red Top', additive: 'Clot Activator', color: 'var(--tube-red)', liq: '#dc2626' },
-    'green': { name: 'Green Top', additive: 'Lithium/Sodium Heparin', color: 'var(--tube-green)', liq: '#dc2626' },
-    'lavender': { name: 'Lavender Top', additive: 'K2/K3 EDTA', color: 'var(--tube-lavender)', liq: '#dc2626' },
-    'pink': { name: 'Pink Top', additive: 'K2 EDTA (Blood Bank)', color: 'var(--tube-pink)', liq: '#dc2626' },
-    'gray': { name: 'Gray Top', additive: 'Sodium Fluoride/Oxalate', color: 'var(--tube-gray)', liq: '#dc2626' },
-    'royal_blue': { name: 'Royal Blue Top', additive: 'EDTA or Heparin (Trace Metal Free)', color: 'var(--tube-royal-blue)', liq: '#dc2626' },
-    'yellow': { name: 'Yellow Top (ACD)', additive: 'Acid Citrate Dextrose', color: 'var(--tube-yellow)', liq: '#dc2626' }
-};
-
-const testDatabase = [
-    // --- EXISTING TESTS (1-12) ---
-    { id: 1, name: 'Complete Blood Count (CBC)', syn: 'Hemogram', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'No special preparation.', inversions: '8-10 times gently', minVolume: '2.0 mL', handling: 'Room temp for 24h', tags: ['Routine'] },
-    { id: 2, name: 'Prothrombin Time (PT/INR)', syn: 'Pro Time', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'Note anticoagulant therapy.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line (1:9)', handling: 'Process within 4h', tags: [] },
-    { id: 3, name: 'Comprehensive Metabolic Panel', syn: 'CMP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting 10-12 hours preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
-    { id: 4, name: 'Lipid Profile', syn: 'Lipid Profile', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Strict 12-hour fast required. Water only.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Allow to clot 30-60 min', tags: ['Fasting'] },
-    { id: 5, name: 'Hemoglobin A1c', syn: 'HbA1c', dept: 'Chemistry', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Keep refrigerated if delayed', tags: [] },
-    { id: 6, name: 'Erythrocyte Sedimentation Rate', syn: 'ESR', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Process within 4h', tags: [] },
-    { id: 7, name: 'D-Dimer', syn: 'd-dimer', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'STAT collection priority.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Centrifuge immediately', tags: ['STAT'] },
-    { id: 8, name: 'Thyroid Stimulating Hormone', syn: 'TSH', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Morning draw preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 9, name: 'Vitamin D (25-OH)', syn: 'Vit D', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Protect from light if possible', tags: [] },
-    { id: 10, name: 'Lactic Acid', syn: 'Lactate', dept: 'Chemistry', tubeId: 'gray', patientPrep: 'Draw WITHOUT tourniquet to prevent elevation.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Place on ICE immediately', tags: ['STAT'] },
-    { id: 11, name: 'Blood Culture (Aerobic)', syn: 'BCx', dept: 'Microbiology', tubeId: 'culture', patientPrep: 'Strict aseptic skin prep (Chlorhexidine).', inversions: '8-10 times gently', minVolume: '8-10 mL per bottle', handling: 'Do NOT refrigerate', tags: ['STAT'] },
-  
-
-    // --- NEWLY ADDED TESTS: HEMATOLOGY & COAGULATION ---
-    { id: 13, name: 'Basic Metabolic Panel', syn: 'BMP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine', 'Fasting'] },
-    { id: 14, name: 'Activated Partial Thromboplastin Time', syn: 'aPTT, PTT', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'Note heparin therapy.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Process within 4h', tags: ['STAT'] },
-    { id: 15, name: 'Fibrinogen Activity', syn: 'Factor I', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'None required.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Process within 4h', tags: [] },
-    { id: 16, name: 'Reticulocyte Count', syn: 'Retic', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Room temp for 24h', tags: [] },
-    { id: 17, name: 'Peripheral Blood Smear', syn: 'PBS, Diff', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'Freshly drawn preferred.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Make smear within 2h', tags: [] },
-    { id: 18, name: 'Factor VIII Activity', syn: 'AHF', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'None required.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Centrifuge immediately, freeze plasma', tags: ['Special Handling'] },
-    { id: 19, name: 'Factor IX Activity', syn: 'Christmas Factor', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'None required.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Centrifuge immediately, freeze plasma', tags: ['Special Handling'] },
-    { id: 20, name: 'Sickle Cell Screen', syn: 'Sickle Dex', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Room temp for 72h', tags: [] },
-    { id: 21, name: 'G6PD Quantitative', syn: 'Glucose-6-Phosphate Dehydrogenase', dept: 'Hematology', tubeId: 'lavender', patientPrep: 'Draw before transfusion.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Refrigerate if delayed', tags: ['Special Handling'] },
-    { id: 22, name: 'Heparin Anti-Xa', syn: 'Anti-Xa', dept: 'Coagulation', tubeId: 'light_blue', patientPrep: 'Timing critical based on dosing.', inversions: '3-4 times strictly', minVolume: 'Fill strictly to line', handling: 'Double centrifuge, freeze plasma', tags: ['STAT'] },
-    { id: 23, name: 'Cold Agglutinin Titer', syn: 'Cold Agg', dept: 'Hematology', tubeId: 'red', patientPrep: 'Keep patient warm prior to draw.', inversions: '5 times', minVolume: '2.0 mL', handling: 'Do NOT refrigerate whole blood', tags: ['Special Handling'] },
-    { id: 24, name: 'Cryoglobulins', syn: 'Cryo', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '5.0 mL', handling: 'Transport at 37°C (Warm)', tags: ['Special Handling'] },
-
-    // --- NEWLY ADDED TESTS: CHEMISTRY & ENDOCRINOLOGY ---
-    { id: 25, name: 'Troponin I', syn: 'Trop, cTnI', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Serial draws to monitor trend.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'STAT processing preferred', tags: ['STAT', 'Routine'] },
-    { id: 26, name: 'NT Pro BNP (Brain Natriuretic Peptide)', syn: 'NT-proBNP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge within 2h', tags: ['STAT'] },
-    { id: 27, name: 'Fasting Blood Glucose', syn: 'FBG, Glu', dept: 'Chemistry', tubeId: 'gray', patientPrep: 'Strict 8-12 hour fast.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Process within 1h', tags: ['Fasting'] },
-    { id: 28, name: '2-Hour Postprandial Glucose', syn: '2HR PPG', dept: 'Chemistry', tubeId: 'gray', patientPrep: 'Eat exact meal, draw exactly 2h after.', inversions: '8-10 times', minVolume: '1.0 mL', handling: 'Process within 1h', tags: ['Special Handling'] },
-    { id: 29, name: 'Oral Glucose Tolerance Test', syn: 'OGTT, GTT', dept: 'Chemistry', tubeId: 'gray', patientPrep: '3-day high carb diet, 10h fast prior.', inversions: '8-10 times', minVolume: '1.0 mL per draw', handling: 'Process each draw immediately', tags: ['Fasting', 'Special Handling'] },
-    { id: 30, name: 'Comprehensive Iron Panel', syn: 'Iron Studies', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting 12h. Draw in AM.', inversions: '5 times', minVolume: '2.0 mL serum', handling: 'Separate from iron supplements', tags: ['Fasting'] },
-    { id: 31, name: 'Ferritin', syn: 'Ferr', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Room temp for 7 days', tags: [] },
-    { id: 32, name: 'Ammonia Level', syn: 'NH3', dept: 'Chemistry', tubeId: 'lavender', patientPrep: 'No smoking 8h prior. Rest quietly, Morning Sample.', inversions: '8-10 times', minVolume: '2.0 mL plasma', handling: 'Place on ICE, spin immediately', tags: ['STAT', 'Special Handling'] },
-   { id: 33, name: 'Cortisol (Morning)', syn: 'Cortisol Morning', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Collect between 8:30-9:00 AM. Patient should rest 15 min before collection, Fasting not required', inversions: '0 times', minVolume: '1.0 mL serum', handling: 'Allow blood to clot for 30 min before centrifugation.', tags: ['Time Critical'] },
-
-
-    { id: 34, name: 'Insulin, Fasting', syn: 'Fasting Insulin', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Strict 8-12 hour fast.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
-    { id: 35, name: 'C-Peptide', syn: 'Connecting Peptide', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting 10-12h required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
-    { id: 36, name: 'Parathyroid Hormone', syn: 'PTH, Intact', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Draw before 10 AM if possible.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge immediately, freeze', tags: ['Special Handling'] },
-    { id: 37, name: 'Vitamin B12', syn: 'Cobalamin', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Protect from light', tags: ['Fasting'] },
-    { id: 38, name: 'Folate (Folic Acid)', syn: 'Vitamin B9', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred. No B-complex 3 days prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Protect from light', tags: ['Fasting'] },
-    { id: 39, name: 'Homocysteine', syn: 'Hcy', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge immediately, freeze', tags: [] },
-    { id: 40, name: 'Magnesium', syn: 'Mg', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine'] },
-    { id: 41, name: 'Phosphorus', syn: 'Phosphate', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Fasting preferred. Draw in AM.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
-    { id: 42, name: 'Uric Acid', syn: 'UA', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Avoid alcohol and high-purine foods.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 43, name: 'Creatine Kinase', syn: 'CK, CPK', dept: 'Chemistry', tubeId: 'red', patientPrep: 'No strenuous exercise 24h prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge within 2h', tags: [] },
-    { id: 44, name: 'Lactate Dehydrogenase', syn: 'LDH', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Centrifuge within 2h', tags: [] },
-    { id: 45, name: 'Amylase', syn: 'Amy', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 46, name: 'Lipase', syn: 'Lip', dept: 'Chemistry', tubeId: 'red', patientPrep: 'NPO 8h preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
-    { id: 47, name: 'Gamma-Glutamyl Transferase', syn: 'GGT', dept: 'Chemistry', tubeId: 'red', patientPrep: 'No alcohol 24h prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-
-    // --- NEWLY ADDED TESTS: TOXICOLOGY & THERAPEUTIC DRUG MONITORING ---
-    { id: 48, name: 'Acetaminophen Level', syn: 'Tylenol, APAP', dept: 'Toxicology', tubeId: 'red', patientPrep: 'STAT collection. Note time of ingestion.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'STAT processing', tags: ['STAT'] },
-    { id: 49, name: 'Salicylate Level', syn: 'Aspirin', dept: 'Toxicology', tubeId: 'red', patientPrep: 'STAT collection. Note time of ingestion.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'STAT processing', tags: ['STAT'] },
-    { id: 50, name: 'Ethanol Level', syn: 'Blood Alcohol, ETOH', dept: 'Toxicology', tubeId: 'gray', patientPrep: 'Do NOT use alcohol swab for prep. Use iodine.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Keep sealed, refrigerate', tags: ['Special Handling'] },
-    { id: 51, name: 'Digoxin', syn: 'Lanoxin', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Draw exactly 6-8h post-dose.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
-    { id: 52, name: 'Vancomycin Trough', syn: 'Vanc Trough', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Draw just before 4th dose.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['STAT', 'Therapeutic Drug Monitoring'] },
-    { id: 53, name: 'Phenytoin', syn: 'Dilantin', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Note dosing schedule.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
-    { id: 54, name: 'Valproic Acid', syn: 'Depakote', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Trough preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
-    { id: 55, name: 'Lithium Level', syn: 'Li', dept: 'Toxicology', tubeId: 'red', patientPrep: 'Trough draw 12h post-dose. Do not use green tube.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Therapeutic Drug Monitoring'] },
-
-    // --- NEWLY ADDED TESTS: TRACE METALS (SPECIALTY) ---
-    { id: 56, name: 'Lead (Blood)', syn: 'Pb', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'Avoid environmental exposure prior.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Special Handling', 'Trace Element'] },
-    { id: 57, name: 'Copper (Blood)', syn: 'Cu', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Special Handling', 'Trace Element'] },
-    { id: 58, name: 'Zinc (Blood)', syn: 'Zn', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'Fasting preferred. No zinc supplements 3 days prior.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Fasting', 'Trace Element'] },
-    { id: 59, name: 'Arsenic (Blood)', syn: 'As', dept: 'Toxicology', tubeId: 'royal_blue', patientPrep: 'Avoid seafood 48h prior.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Trace metal free tube required', tags: ['Special Handling', 'Trace Element'] },
-
-    // --- NEWLY ADDED TESTS: IMMUNOLOGY, SEROLOGY & MICROBIOLOGY ---
-    { id: 60, name: 'C-Reactive Protein', syn: 'CRP', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine'] },
-    { id: 61, name: 'High-Sensitivity CRP', syn: 'hs-CRP, Cardio CRP', dept: 'Immunology', tubeId: 'red', patientPrep: 'No illness 2 weeks prior. Fasting preferred.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Fasting'] },
-    { id: 62, name: 'Rheumatoid Factor', syn: 'RF', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 63, name: 'Antinuclear Antibody', syn: 'ANA', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 64, name: 'Monospot', syn: 'Heterophile Antibody', dept: 'Immunology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: ['STAT'] },
-    { id: 65, name: 'HIV 1/2 Antigen/Antibody', syn: '4th Gen HIV', dept: 'Serology', tubeId: 'red', patientPrep: 'Consent required in some states.', inversions: '5 times', minVolume: '2.0 mL serum', handling: 'Clot 30 min before spin', tags: ['Routine'] },
-    { id: 66, name: 'Hepatitis B Surface Antigen', syn: 'HBsAg', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 67, name: 'Hepatitis C Antibody', syn: 'Anti-HCV', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 68, name: 'Rapid Plasma Reagin', syn: 'RPR, Syphilis', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 69, name: 'Rubella Antibodies', syn: 'German Measles IgG/IgM', dept: 'Serology', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 70, name: 'Blood Culture (Anaerobic)', syn: 'Anaerobic BCx', dept: 'Microbiology', tubeId: 'culture', patientPrep: 'Strict aseptic skin prep.', inversions: '8-10 times gently', minVolume: '8-10 mL per bottle', handling: 'Do NOT refrigerate', tags: ['STAT'] },
-
-    // --- NEWLY ADDED TESTS: BLOOD BANK & MOLECULAR ---
-    { id: 71, name: 'Crossmatch', syn: 'Crossmatch', dept: 'Blood Bank', tubeId: 'lavender', patientPrep: 'Verify patient identity 2x. Recent transfusion history?', inversions: '8-10 times', minVolume: '7.0 mL', handling: 'Keep at room temp', tags: ['STAT'] },
-    { id: 72, name: 'Blood Grouping & Rh typing', syn: 'Blood Group', dept: 'Blood Bank', tubeId: 'lavender', patientPrep: 'Verify patient identity 2x.', inversions: '8-10 times', minVolume: '7.0 mL', handling: 'Keep at room temp', tags: ['Routine'] },
-    { id: 73, name: 'Direct Coombs Test', syn: 'DCT, Direct Coombs', dept: 'Blood Bank', tubeId: 'lavender', patientPrep: 'Draw before transfusion if possible.', inversions: '8-10 times', minVolume: '2.0 mL', handling: 'Keep at room temp', tags: [] },
-    { id: 74, name: 'Indirect Coombs Test', syn: 'ICT, Indirect Coombs', dept: 'Blood Bank', tubeId: 'red', patientPrep: 'None required.', inversions: '8-10 times', minVolume: '5.0 mL', handling: 'Keep at room temp', tags: [] },
-    { id: 75, name: 'Flow Cytometry', syn: 'Flow, Immunophenotyping', dept: 'Molecular', tubeId: 'green', patientPrep: 'Fresh specimen critical.', inversions: '8-10 times', minVolume: '5.0 mL', handling: 'Room temp, deliver immediately', tags: ['Special Handling'] },
-    { id: 76, name: 'HLA B27', syn: 'HLA B27', dept: 'Molecular', tubeId: 'lavender', patientPrep: 'Consent required. Verify identity.', inversions: '8-10 times', minVolume: '8.0 mL', handling: 'Room temp, deliver immediately', tags: ['Special Handling'] },
-
-    // --- NEWLY ADDED TESTS: TUMOR MARKERS ---
-    { id: 77, name: 'Prostate Specific Antigen', syn: 'PSA', dept: 'Chemistry', tubeId: 'red', patientPrep: 'No ejaculation or prostate exam 48h prior.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 78, name: 'Carcinoembryonic Antigen', syn: 'CEA', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 79, name: 'Cancer Antigen 125', syn: 'CA-125', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 80, name: 'Alpha-Fetoprotein', syn: 'AFP', dept: 'Chemistry', tubeId: 'red', patientPrep: 'None required.', inversions: '5 times', minVolume: '1.0 mL serum', handling: 'Clot 30 min before spin', tags: [] },
-    { id: 101, name: 'Cortisol (Evening)', syn: 'Cortisol evening', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Collect between 4:00-5:00 PM. Patient should rest 15 min before collection.', inversions: '0 times', minVolume: '1.0 mL serum', handling: 'Allow blood to clot for 30 min before centrifugation.', tags: ['Time Critical'] },
-
-{ id: 102, name: 'Basal Cortisol', syn: 'Cortisol Basal', dept: 'Chemistry', tubeId: 'red', patientPrep: 'Collect between 8:30-9:00 AM before ACTH stimulation or corticosteroid administration. Fasting Sample is required, Rest 15 min before collection.', inversions: '0 times', minVolume: '1.0 mL serum', handling: 'Allow blood to clot for 30 min before centrifugation.', tags: ['Baseline', 'Time Critical'] },
-
-{ id: 103, name: 'Fibrin Degradation Products (FDP)', syn: 'FDP', dept: 'Hematology', tubeId: 'light_blue', patientPrep: 'No special preparation required.', inversions: '3-4 times', minVolume: '2.7 mL plasma', handling: 'Centrifuge promptly and separate plasma. Freeze if testing is delayed.', tags: ['Coagulation'] },
-
-{ id: 104, name: 'Factor V', syn: 'Factor 5', dept: 'Hematology', tubeId: 'light_blue', patientPrep: 'Avoid heparin contamination. Inform physician if on anticoagulants.', inversions: '3-4 times', minVolume: '2.7 mL plasma', handling: 'Prepare platelet-poor plasma within 1 hour. Freeze immediately if not tested promptly.', tags: ['Coagulation', 'Special Handling'] },
-
-{ 
-        id: 105, 
-        name: 'HOMA-IR (Insulin Resistance)', 
-        syn: 'HOMA Index', 
-        dept: 'Chemistry', 
-        tubeId: ['red', 'gray'], // <--- Note the Array here!
-        patientPrep: 'Strict 8-12 hour fast required.', 
-        inversions: '5-10 times for both', 
-        minVolume: '1.0 mL per tube', 
-        handling: 'Clot Red tube 30m, spin Gray immediately', 
-        tags: ['Fasting', 'Double Tube'] 
-    },
-    
-    // --- NEWLY ADDED MULTI-TUBE & SPECIALTY TESTS ---
-    { 
-        id: 106, 
-        name: 'Serum/Plasma Osmolality', 
-        syn: 'Osmolality Panel', 
-        dept: 'Chemistry', 
-        tubeId: ['red', 'gray'], 
-        patientPrep: 'No special preparation.', 
-        inversions: '5 times (Red), 8-10 times (Gray)', 
-        minVolume: '1.0 mL per tube', 
-        handling: 'Clot Red 30 min, centrifuge both within 2h', 
-        tags: ['Double Tube'] 
-    },
-    { 
-        id: 107, 
-        name: 'Coombs Test Panel (Direct & Indirect)', 
-        syn: 'DCT & ICT', 
-        dept: 'Blood Bank', 
-        tubeId: ['red', 'lavender'], 
-        patientPrep: 'Verify patient identity strictly.', 
-        inversions: '5 times (Red), 8-10 times (Lavender)', 
-        minVolume: '5.0 mL (Red), 2.0 mL (Lavender)', 
-        handling: 'Keep at room temp. Do not refrigerate.', 
-        tags: ['Double Tube'] 
-    },
-    { 
-        id: 108, 
-        name: 'Lupus Anticoagulant', 
-        syn: 'LA, Lupus Inhibitor', 
-        dept: 'Coagulation', 
-        tubeId: 'light_blue', 
-        patientPrep: 'Patient should not be on Heparin/Coumadin.', 
-        inversions: '3-4 times strictly', 
-        minVolume: 'Fill strictly to line (1:9 ratio)', 
-        handling: 'Double centrifuge, freeze platelet-poor plasma', 
-        tags: ['Special Handling'] 
-    },
-    { 
-        id: 109, 
-        name: 'Anti-Phospholipid Antibody', 
-        syn: 'APA Panel', 
-        dept: 'Immunology', 
-        tubeId: 'red', 
-        patientPrep: 'None required.', 
-        inversions: '5 times', 
-        minVolume: '1.0 mL serum', 
-        handling: 'Clot 30 min before spin', 
-        tags: [] 
-    },
-    { 
-        id: 110, 
-        name: 'Anti-Cardiolipin Antibody', 
-        syn: 'ACA, aCL', 
-        dept: 'Immunology', 
-        tubeId: 'red', 
-        patientPrep: 'None required.', 
-        inversions: '5 times', 
-        minVolume: '1.0 mL serum', 
-        handling: 'Clot 30 min before spin', 
-        tags: [] 
-    },
-    { 
-        id: 111, 
-        name: 'QuantiFERON-TB Gold', 
-        syn: 'IGRA, TB Blood Test', 
-        dept: 'Microbiology', 
-        tubeId: 'green', 
-        patientPrep: 'Collect Monday-Thursday only to ensure lab viability.', 
-        inversions: '10 times vigorously to coat tube', 
-        minVolume: '4.0 mL Whole Blood', 
-        handling: 'Keep at room temp (17-27°C). Must incubate within 16h.', 
-        tags: ['Special Handling', 'Time Critical'] 
-    },
-];
+      let tubes = {};
+      let testDatabase = [];
 
         // ==========================================
         // STATE & PERSISTENCE
@@ -895,18 +711,6 @@ const testDatabase = [
         let favorites = new Set(LS.get('lc_favorites', []));
         let tray = LS.get('lc_tray', []); // array of test ids
         let btctHistory = LS.get('lc_btct_history', []);
-        let customTests = LS.get('lc_custom_tests', []);
-        let deletedIds = new Set(LS.get('lc_deleted_ids', []));
-        let editOverrides = LS.get('lc_edit_overrides', {}); // {id: {field: value}}
-
-        // Merge persisted admin edits + custom additions + deletions into testDatabase
-        testDatabase.forEach(t => {
-            if (editOverrides[t.id]) Object.assign(t, editOverrides[t.id]);
-        });
-        customTests.forEach(t => testDatabase.push(t));
-        for (let i = testDatabase.length - 1; i >= 0; i--) {
-            if (deletedIds.has(testDatabase[i].id)) testDatabase.splice(i, 1);
-        }
 
         // ==========================================
         // TOASTS
@@ -1027,6 +831,22 @@ const testDatabase = [
             document.getElementById('search-input-guide').addEventListener('input', renderTests);
         });
 
+        function renderFilters() {
+            const container = document.getElementById('filter-container');
+            if (!container) return;
+            const depts = new Set(testDatabase.map(t => t.dept).filter(Boolean));
+            const sortedDepts = Array.from(depts).sort();
+            
+            let html = `<button onclick="setFilter('All')" class="filter-btn px-3 py-1 text-xs font-semibold rounded-full shrink-0 transition-colors ${currentFilter === 'All' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">All</button>`;
+            html += `<button onclick="setFilter('★ Favorites')" class="filter-btn px-3 py-1 text-xs font-semibold rounded-full shrink-0 transition-colors ${currentFilter === '★ Favorites' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">★ Favorites</button>`;
+            
+            sortedDepts.forEach(d => {
+                html += `<button onclick="setFilter('${d}')" class="filter-btn px-3 py-1 text-xs font-semibold rounded-full shrink-0 transition-colors ${currentFilter === d ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">${d}</button>`;
+            });
+            
+            container.innerHTML = html;
+        }
+
         function renderTests() {
             const query = document.getElementById('search-input-guide').value.toLowerCase();
             const listEl = document.getElementById('test-list');
@@ -1091,6 +911,15 @@ const testDatabase = [
             }).join('');
 
             document.getElementById('det-prep').innerText = test.patientPrep;
+            const prepBnEl = document.getElementById('det-prep-bn');
+            if (test.patientPrepBn) {
+                prepBnEl.innerText = test.patientPrepBn;
+                prepBnEl.classList.remove('hidden');
+            } else {
+                prepBnEl.innerText = '';
+                prepBnEl.classList.add('hidden');
+            }
+
             document.getElementById('det-inv').innerText = test.inversions;
             document.getElementById('det-vol').innerText = test.minVolume;
             document.getElementById('det-hand').innerText = test.handling;
@@ -1100,6 +929,7 @@ const testDatabase = [
             favBtn.classList.toggle('text-slate-300', !favorites.has(id));
 
             document.getElementById('admin-del-btn').classList.toggle('hidden', !isAdmin);
+            document.getElementById('admin-edit-tube-btn').classList.toggle('hidden', !isAdmin);
 
             const tIds = Array.isArray(test.tubeId) ? test.tubeId : [test.tubeId];
             const tubeContainer = document.getElementById('tube-visual-container');
@@ -1565,6 +1395,7 @@ const testDatabase = [
                 document.getElementById('admin-toolbar').classList.add('hidden');
                 document.getElementById('admin-toolbar').classList.remove('flex');
                 document.getElementById('admin-del-btn').classList.add('hidden');
+                document.getElementById('admin-edit-tube-btn').classList.add('hidden');
             } else {
                 const modal = document.getElementById('login-modal');
                 const box = document.getElementById('login-box');
@@ -1587,7 +1418,10 @@ const testDatabase = [
                 document.getElementById('admin-icon').classList.replace('fa-lock', 'fa-lock-open');
                 document.getElementById('admin-toolbar').classList.remove('hidden');
                 document.getElementById('admin-toolbar').classList.add('flex');
-                if (currentTestId !== null) document.getElementById('admin-del-btn').classList.remove('hidden');
+                if (currentTestId !== null) {
+                    document.getElementById('admin-del-btn').classList.remove('hidden');
+                    document.getElementById('admin-edit-tube-btn').classList.remove('hidden');
+                }
                 closeAdminModal();
                 showToast('Admin mode unlocked', 'success', 'fa-unlock');
             } else {
@@ -1598,10 +1432,14 @@ const testDatabase = [
         function adminDeleteCurrent() {
             if (!isAdmin || currentTestId === null) return;
             if (!confirm('Delete this test permanently from the directory?')) return;
-            deletedIds.add(currentTestId);
-            LS.set('lc_deleted_ids', [...deletedIds]);
+            
             const idx = testDatabase.findIndex(t => t.id === currentTestId);
             if (idx > -1) testDatabase.splice(idx, 1);
+            
+            if (window.fbDelete && window.fbDoc && window.fbDb) {
+                window.fbDelete(window.fbDoc(window.fbDb, "tests", currentTestId.toString())).catch(e => console.error(e));
+            }
+
             document.getElementById('empty-state').classList.remove('hidden');
             document.getElementById('active-state').classList.add('hidden');
             currentTestId = null;
@@ -1619,6 +1457,59 @@ const testDatabase = [
             document.getElementById('add-test-modal').classList.add('hidden');
             document.getElementById('add-test-modal').classList.remove('flex');
         }
+        
+        function openEditTubeModal() {
+            if (!isAdmin || currentTestId === null) return;
+            const test = testDatabase.find(t => t.id === currentTestId);
+            if (!test) return;
+            const tIds = Array.isArray(test.tubeId) ? test.tubeId : [test.tubeId];
+            
+            let html = '';
+            for (const key of Object.keys(tubes)) {
+                const checked = tIds.includes(key) ? 'checked' : '';
+                html += `
+                    <label class="flex items-center gap-3 p-2 hover:bg-slate-100 rounded cursor-pointer transition-colors">
+                        <input type="checkbox" value="${key}" class="w-4 h-4 text-amber-500 rounded border-slate-300 focus:ring-amber-500 edit-tube-checkbox" ${checked}>
+                        <div class="w-3 h-3 rounded-full border border-black/10" style="background-color: ${tubes[key].color}"></div>
+                        <span class="text-sm font-medium text-slate-700">${tubes[key].name}</span>
+                    </label>
+                `;
+            }
+            document.getElementById('edit-tube-list').innerHTML = html;
+            
+            document.getElementById('edit-tube-modal').classList.remove('hidden');
+            document.getElementById('edit-tube-modal').classList.add('flex');
+        }
+
+        function closeEditTubeModal() {
+            document.getElementById('edit-tube-modal').classList.add('hidden');
+            document.getElementById('edit-tube-modal').classList.remove('flex');
+        }
+
+        function saveEditTube() {
+            const checkboxes = document.querySelectorAll('.edit-tube-checkbox:checked');
+            const selected = Array.from(checkboxes).map(c => c.value);
+            if (selected.length === 0) {
+                showToast('Please select at least one tube', 'error', 'fa-triangle-exclamation');
+                return;
+            }
+            
+            const newTubeId = selected.length === 1 ? selected[0] : selected;
+            const idx = testDatabase.findIndex(t => t.id === currentTestId);
+            if (idx > -1) {
+                testDatabase[idx].tubeId = newTubeId;
+                
+                if (window.fbUpdate && window.fbDoc && window.fbDb) {
+                    window.fbUpdate(window.fbDoc(window.fbDb, "tests", currentTestId.toString()), {
+                        tubeId: newTubeId
+                    }).catch(e => console.error("Firebase update error", e));
+                }
+                
+                loadTestDetails(currentTestId);
+                closeEditTubeModal();
+                showToast('Tube updated', 'success', 'fa-check');
+            }
+        }
         function saveNewTest() {
             const name = document.getElementById('new-name').value.trim();
             if (!name) { showToast('Test name is required', 'error', 'fa-triangle-exclamation'); return; }
@@ -1635,8 +1526,11 @@ const testDatabase = [
                 tags: []
             };
             testDatabase.push(test);
-            customTests.push(test);
-            LS.set('lc_custom_tests', customTests);
+            
+            if (window.fbSet && window.fbDoc && window.fbDb) {
+                window.fbSet(window.fbDoc(window.fbDb, "tests", newId.toString()), test).catch(e => console.error(e));
+            }
+
             closeAddTestModal();
             renderTests();
             showToast(`"${name}" added to directory`, 'success', 'fa-circle-check');
@@ -1652,6 +1546,69 @@ const testDatabase = [
             showToast('Data exported', 'success', 'fa-download');
         }
 
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.testDatabase || !Array.isArray(data.testDatabase)) {
+                        showToast('Invalid file format: testDatabase missing', 'error', 'fa-triangle-exclamation');
+                        return;
+                    }
+                    if (!confirm('This will WIPE all existing tests in the database and replace them with the imported data. Are you absolutely sure?')) {
+                        event.target.value = '';
+                        return;
+                    }
+
+                    if (window.fbGetDocs && window.fbCollection && window.fbDelete && window.fbDb && window.fbSet && window.fbDoc) {
+                        showToast('Wiping old database...', 'info', 'fa-spinner fa-spin');
+                        // Delete all
+                        const snap = await window.fbGetDocs(window.fbCollection(window.fbDb, "tests"));
+                        const deletePromises = [];
+                        snap.forEach(doc => {
+                            deletePromises.push(window.fbDelete(window.fbDoc(window.fbDb, "tests", doc.id)));
+                        });
+                        await Promise.all(deletePromises);
+                        
+                        showToast('Importing new tests...', 'info', 'fa-spinner fa-spin');
+                        // Set all
+                        const setPromises = [];
+                        data.testDatabase.forEach(test => {
+                            setPromises.push(window.fbSet(window.fbDoc(window.fbDb, "tests", test.id.toString()), test));
+                        });
+                        await Promise.all(setPromises);
+                        
+                        // Update local state
+                        testDatabase = data.testDatabase;
+                        if (data.favorites) favorites = new Set(data.favorites);
+                        if (data.tray) tray = data.tray;
+                        if (data.btctHistory) btctHistory = data.btctHistory;
+                        
+                        LS.set('lc_favorites', [...favorites]);
+                        LS.set('lc_tray', tray);
+                        LS.set('lc_btct_history', btctHistory);
+
+                        renderFilters();
+                        renderTests();
+                        renderBtctHistory();
+                        updateTrayBadge();
+                        if (currentTestId) loadTestDetails(currentTestId);
+                        
+                        showToast('Database imported successfully!', 'success', 'fa-check');
+                    } else {
+                        showToast('Firebase not connected', 'error', 'fa-triangle-exclamation');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to parse file', 'error', 'fa-triangle-exclamation');
+                }
+                event.target.value = ''; // reset file input
+            };
+            reader.readAsText(file);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.editable-field').forEach(field => {
                 field.addEventListener('click', function () {
@@ -1660,7 +1617,7 @@ const testDatabase = [
                     const key = this.getAttribute('data-field');
                     this.classList.add('editing');
 
-                    if (key === 'patientPrep') this.innerHTML = `<textarea class="w-full bg-transparent outline-none resize-none text-slate-800" rows="3">${orig}</textarea>`;
+                    if (key === 'patientPrep' || key === 'patientPrepBn') this.innerHTML = `<textarea class="w-full bg-transparent outline-none resize-none text-slate-800" rows="3">${orig}</textarea>`;
                     else this.innerHTML = `<input type="text" class="w-full bg-transparent outline-none text-slate-800 font-bold" value="${orig}">`;
 
                     const input = this.querySelector('input, textarea');
@@ -1673,10 +1630,17 @@ const testDatabase = [
                         const idx = testDatabase.findIndex(t => t.id === currentTestId);
                         if (idx > -1) {
                             testDatabase[idx][key] = val;
-                            editOverrides[currentTestId] = editOverrides[currentTestId] || {};
-                            editOverrides[currentTestId][key] = val;
-                            LS.set('lc_edit_overrides', editOverrides);
+                            
+                            if (window.fbUpdate && window.fbDoc && window.fbDb) {
+                                window.fbUpdate(window.fbDoc(window.fbDb, "tests", currentTestId.toString()), {
+                                    [key]: val
+                                }).catch(e => console.error("Firebase update error", e));
+                            }
+                            
                             showToast('Change saved', 'success', 'fa-floppy-disk');
+                            if (['name', 'syn', 'dept'].includes(key)) {
+                                renderTests();
+                            }
                         }
                     };
                     input.addEventListener('blur', save);
@@ -1688,19 +1652,82 @@ const testDatabase = [
        // ==========================================
         // INITIALIZATION
         // ==========================================
-        renderTests();
-        renderBtctHistory();
-        updateTrayBadge();
-        tickClock();
-        switchModule('module-print'); // <--- THIS FORCES THE PRINT PAGE TO OPEN
+        function initApp() {
+            renderFilters();
+            renderTests();
+            renderBtctHistory();
+            updateTrayBadge();
+            tickClock();
+            switchModule('module-print'); // <--- THIS FORCES THE PRINT PAGE TO OPEN
 
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
+            const splash = document.getElementById('splash');
+            if (splash) {
                 splash.style.opacity = '0';
                 splash.style.transition = 'opacity .4s ease';
                 setTimeout(() => splash.remove(), 400);
-            }, 350);
+            }
+        }
+
+        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(async (firebaseApp) => {
+            const { initializeApp } = firebaseApp;
+            const { getFirestore, collection, getDocs, setDoc, doc, updateDoc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+            
+            const firebaseConfig = {
+                apiKey: "AIzaSyAwm_-Z56EuYYR43iJSMasQdmDcxFLpLvo",
+                authDomain: "labcollect-ebdf9.firebaseapp.com",
+                projectId: "labcollect-ebdf9",
+                storageBucket: "labcollect-ebdf9.firebasestorage.app",
+                messagingSenderId: "588607094551",
+                appId: "1:588607094551:web:233a00d165d16111a9c152"
+            };
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            
+            window.fbDb = db;
+            window.fbDoc = doc;
+            window.fbUpdate = updateDoc;
+            window.fbDelete = deleteDoc;
+            window.fbSet = setDoc;
+            window.fbCollection = collection;
+            window.fbGetDocs = getDocs;
+
+            try {
+                // Fetch Tubes
+                let tubesSnap = await getDocs(collection(db, "tubes"));
+                tubesSnap.forEach(doc => {
+                    tubes[doc.id] = doc.data();
+                });
+
+                // Seed missing extended tubes
+                const extendedTubes = {
+                    'urine_container': { name: 'Urine Container', color: '#fbbf24', liq: 'rgba(251, 191, 36, 0.4)', additive: 'None' },
+                    'stool_container': { name: 'Stool Container', color: '#78350f', liq: 'transparent', additive: 'None' },
+                    'swab': { name: 'Swab', color: '#f8fafc', liq: 'transparent', additive: 'Media' },
+                    'sterile_cup': { name: 'Sterile Cup', color: '#94a3b8', liq: 'transparent', additive: 'None' },
+                    'csf_tubes': { name: 'CSF Tubes', color: '#e2e8f0', liq: 'rgba(255,255,255,0.5)', additive: 'None' },
+                    'capillary': { name: 'Capillary', color: '#ef4444', liq: 'rgba(239, 68, 68, 0.8)', additive: 'Heparin' }
+                };
+                for (const [id, tubeData] of Object.entries(extendedTubes)) {
+                    if (!tubes[id]) {
+                        await setDoc(doc(db, "tubes", id), tubeData);
+                        tubes[id] = tubeData;
+                        console.log(`Seeded missing tube: ${id}`);
+                    }
+                }
+
+                // Fetch Tests
+                let testsSnap = await getDocs(collection(db, "tests"));
+                testsSnap.forEach(doc => {
+                    testDatabase.push(doc.data());
+                });
+            } catch (err) {
+                console.error("Firebase Data Error:", err);
+            }
+
+            initApp();
+        }).catch(err => {
+            console.error("Firebase Load Error:", err);
+            initApp();
         });
 
         if ('serviceWorker' in navigator) {
