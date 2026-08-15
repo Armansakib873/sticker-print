@@ -1,4 +1,4 @@
-const CACHE_NAME = 'labcollect-pro-v1.3';
+const CACHE_NAME = 'labcollect-pro-v1.4';
 
 // Files to cache immediately on install
 const INITIAL_CACHED_RESOURCES = [
