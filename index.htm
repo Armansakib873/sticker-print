@@ -285,6 +285,8 @@
 
     <!-- Far Left App Navigation (Bottom Bar on Mobile) -->
     <nav class="w-full md:w-20 bg-white border-t md:border-t-0 md:border-r border-slate-200 flex flex-row md:flex-col items-center justify-around md:justify-start py-2 md:py-6 shrink-0 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] md:shadow-sm overflow-x-auto scrollbar-hide">
+        
+        
         <div class="hidden md:flex w-10 h-10 rounded-xl brand-badge items-center justify-center text-white font-bold text-xl mb-8 shadow-md shrink-0">
             L<span class="text-blue-200">C</span>
         </div>
@@ -339,9 +341,15 @@
                 <div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-gray-400"></div> Gray</div>
             </div>
 
-            <button onclick="openCmdk()" class="hidden md:flex items-center gap-2 text-xs text-slate-400 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-300 transition-all">
-                <i class="fa-solid fa-magnifying-glass"></i> Quick search <kbd class="bg-white border border-slate-200 rounded px-1 text-[10px] font-bold ml-2">/</kbd>
-            </button>
+           <div class="hidden md:flex items-center gap-3">
+                <button onclick="openCmdk()" class="flex items-center gap-2 text-xs text-slate-400 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg hover:border-blue-300 transition-all">
+                    <i class="fa-solid fa-magnifying-glass"></i> Quick search <kbd class="bg-white border border-slate-200 rounded px-1 text-[10px] font-bold ml-2">/</kbd>
+                </button>
+                
+                <a href="https://ashlaboratory1-jpg.github.io/StickerPrinter/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-all shadow-sm">
+                    <i class="fa-solid fa-print"></i> LabSticker <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1 opacity-70"></i>
+                </a>
+            </div>
 
             <div id="live-clock" class="mono text-xs font-bold text-slate-400 hidden sm:block ml-auto"></div>
 
